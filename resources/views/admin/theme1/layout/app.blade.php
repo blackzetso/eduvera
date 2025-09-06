@@ -8,18 +8,18 @@
 		<meta name="description" content="Gambolthemes">
 		<meta name="author" content="Gambolthemes">
 		<title>Eduvera - Admin Dashboard</title>
-
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 		<!-- Favicon Icon -->
 		<link rel="icon" type="image/png" href="{{ asset('admin/theme1/images/fav.png') }}">
 
 		<!-- Stylesheets -->
 		<link href='http://fonts.googleapis.com/css?family=Roboto:400,700,500' rel='stylesheet'>
 		<link href='{{ asset('admin/theme1/vendor/unicons-2.0.1/css/unicons.css') }}' rel='stylesheet'>
-		<link href="{{ asset('admin/theme1/css/vertical-responsive-menu1.min.css') }}" rel="stylesheet">
+		<link href="{{ asset('admin/theme1/css/vertical-responsive-menu.min.css') }}" rel="stylesheet">
 		<link href="{{ asset('admin/theme1/css/instructor-dashboard.css') }}" rel="stylesheet">
 		<link href="{{ asset('admin/theme1/css/instructor-responsive.css') }}" rel="stylesheet">
 		<link href="{{ asset('admin/theme1/css/night-mode.css') }}" rel="stylesheet">
-
+        <link href="{{ asset('admin/theme1/css/style.css') }}" rel="stylesheet">
 		<!-- Vendor Stylesheets -->
 		<link href="{{ asset('admin/theme1/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
 		<link href="{{ asset('admin/theme1/vendor/OwlCarousel/assets/owl.carousel.css') }}" rel="stylesheet">
@@ -27,7 +27,9 @@
 		<link href="{{ asset('admin/theme1/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
 		<link href="{{ asset('admin/theme1/vendor/bootstrap-select/docs/docs/dist/css/bootstrap-select.min.css') }}" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="{{ asset('admin/theme1/vendor/semantic/semantic.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('admin/theme1/css/flaticon.css') }}">
 
+        @yield('style')
 	</head>
 
 <body>
@@ -50,5 +52,9 @@
 	<script src="{{ asset('admin/theme1/js/custom1.js') }}"></script>
 	<script src="{{ asset('admin/theme1/js/night-mode.js') }}"></script>
 
+    @section('script')
 </body>
 </html>
+
+
+

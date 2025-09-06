@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('form_builders', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->enum('status',['enabled','disabled'])->default('enabled');
             $table->timestamps();
         });
     }

@@ -9,7 +9,7 @@
 						</a>
 					</li>
 					<li class="menu--item">
-						<a href="instructor_dashboard.html" class="menu--link active" title="Dashboard">
+						<a href="{{ route('admin.forms.index') }}" class="menu--link active" title="Dashboard">
 							<i class="uil uil-apps menu--icon"></i>
 							<span class="menu--label">Form Builder</span>
 						</a>

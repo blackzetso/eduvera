@@ -1,0 +1,131 @@
+<script setup>
+import { ref } from 'vue'
+import AppLayout from '@/Pages/Admin/theme1/Layout/App.vue'
+import { Head, useForm, Link } from '@inertiajs/vue3'
+import { route } from 'ziggy-js'
+import Swal from 'sweetalert2'
+
+const props = defineProps({
+  teacher: Object,
+  subjects: Array,
+  teacherSubjects: Array
+})
+
+const form = useForm({
+  name: props.teacher.name,
+  email: props.teacher.email,
+  password: '',
+  password_confirmation: '',
+  phone: props.teacher.phone || '',
+  department: props.teacher.department || '',
+  job_title: props.teacher.job_title || '',
+  subjects: props.teacherSubjects || []
+})
+
+function submit() {
+  form.put(route('admin.teachers.update', props.teacher.id), {
+    onSuccess: () => {
+      Swal.fire('تم الحفظ!', 'تم تحديث بيانات المدرس بنجاح.', 'success')
+    },
+    onError: () => {
+      Swal.fire('خطأ!', 'يرجى التأكد من البيانات.', 'error')
+    }
+  })
+}
+</script>
+
+<template>
+  <Head title="تعديل بيانات المدرس" />
+  <AppLayout>
+    <div class="page-content-wrapper border">
+      <div class="card-body px-1 px-sm-4">
+        <form @submit.prevent="submit">
+          <h4>تعديل بيانات المدرس</h4>
+          <Link :href="route('admin.teachers.index')">
+            <i class="fas fa-arrow-left"></i> رجوع
+          </Link>
+          <hr />
+
+          <div class="row g-4">
+            <!-- الاسم -->
+            <div class="col-md-6">
+              <label class="form-label">الاسم <span class="text-danger">*</span></label>
+              <input class="form-control" v-model="form.name" type="text" />
+              <div v-if="form.errors.name" class="text-danger">{{ form.errors.name }}</div>
+            </div>
+
+            <!-- البريد -->
+            <div class="col-md-6">
+              <label class="form-label">البريد الإلكتروني <span class="text-danger">*</span></label>
+              <input class="form-control" v-model="form.email" type="email" />
+              <div v-if="form.errors.email" class="text-danger">{{ form.errors.email }}</div>
+            </div>
+
+            <!-- كلمة المرور -->
+            <div class="col-md-6">
+              <label class="form-label">كلمة المرور (اتركها فارغة إذا لم ترد التغيير)</label>
+              <input class="form-control" v-model="form.password" type="password" />
+              <div v-if="form.errors.password" class="text-danger">{{ form.errors.password }}</div>
+            </div>
+
+            <!-- تأكيد كلمة المرور -->
+            <div class="col-md-6">
+              <label class="form-label">تأكيد كلمة المرور</label>
+              <input class="form-control" v-model="form.password_confirmation" type="password" />
+            </div>
+
+            <!-- الهاتف -->
+            <div class="col-md-6">
+              <label class="form-label">رقم الهاتف</label>
+              <input class="form-control" v-model="form.phone" type="text" />
+              <div v-if="form.errors.phone" class="text-danger">{{ form.errors.phone }}</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">القسم</label>
+              <input class="form-control" v-model="form.department" type="text" />
+              <div v-if="form.errors.department" class="text-danger">{{ form.errors.department }}</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">الوظيفة</label>
+              <input class="form-control" v-model="form.job_title" type="text" />
+              <div v-if="form.errors.job_title" class="text-danger">{{ form.errors.job_title }}</div>
+            </div>
+
+            <!-- المواد -->
+            <div class="col-12">
+              <label class="form-label">المواد الدراسية</label>
+              <div class="border p-3 rounded bg-light" style="max-height: 200px; overflow-y: auto;">
+                <div v-for="subject in subjects" :key="subject.id" class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    :value="subject.id"
+                    v-model="form.subjects"
+                    :id="`subject-${subject.id}`"
+                  />
+                  <label class="form-check-label" :for="`subject-${subject.id}`">
+                    {{ subject.name }}
+                  </label>
+                </div>
+              </div>
+              <div v-if="form.errors.subjects" class="text-danger">{{ form.errors.subjects }}</div>
+            </div>
+
+            <!-- زر الحفظ -->
+            <div class="d-flex justify-content-end mt-3">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                :disabled="form.processing"
+              >
+                حفظ التعديلات
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </AppLayout>
+</template>

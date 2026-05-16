@@ -1,0 +1,160 @@
+{
+  "info": {
+    "_postman_id": "78bf42d8-1471-4a26-8440-7c7e2be0e991",
+    "name": "WhatsApp Baileys API",
+    "description": "WhatsApp API using Baileys library",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "16199630"
+  },
+  "item": [
+    {
+      "name": "Home",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://wa.semicolon-solution.net/",
+          "protocol": "https",
+          "host": [
+            "wa",
+            "semicolon-solution",
+            "net"
+          ],
+          "path": [
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://wa.semicolon-solution.net/status",
+          "protocol": "https",
+          "host": [
+            "wa",
+            "semicolon-solution",
+            "net"
+          ],
+          "path": [
+            "status"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get QR Code (JSON)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://wa.semicolon-solution.net/qr",
+          "protocol": "https",
+          "host": [
+            "wa",
+            "semicolon-solution",
+            "net"
+          ],
+          "path": [
+            "qr"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get QR Code (PNG Image)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://wa.semicolon-solution.net/qr.png",
+          "protocol": "https",
+          "host": [
+            "wa",
+            "semicolon-solution",
+            "net"
+          ],
+          "path": [
+            "qr.png"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Send WhatsApp Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"jid\": \"201234567890@s.whatsapp.net\",\n    \"text\": \"Hello from Baileys API!\"\n}"
+        },
+        "url": {
+          "raw": "https://wa.semicolon-solution.net/send-message",
+          "protocol": "https",
+          "host": [
+            "wa",
+            "semicolon-solution",
+            "net"
+          ],
+          "path": [
+            "send-message"
+          ]
+        },
+        "description": "Send a WhatsApp message. Replace the jid with the target phone number in format: [country_code][number]@s.whatsapp.net"
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Session (Protected)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "mynewsecretkey123456",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "https://wa.semicolon-solution.net/api/whatsapp/delete",
+          "protocol": "https",
+          "host": [
+            "wa",
+            "semicolon-solution",
+            "net"
+          ],
+          "path": [
+            "api",
+            "whatsapp",
+            "delete"
+          ]
+        },
+        "description": "Delete the WhatsApp session and restart connection. Requires API key in x-api-key header."
+      },
+      "response": []
+    }
+  ]
+}

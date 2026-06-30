@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, onMounted, ref, onBeforeUnmount, watch } from 'vue'
+import { reactive, onMounted, ref, onBeforeUnmount, watch, nextTick } from 'vue'
 import AppLayout from '@/Pages/Admin/theme1/Layout/App.vue'
 import { Head, useForm, Link, usePage, router } from '@inertiajs/vue3'
 import { route } from 'ziggy-js'
@@ -8,6 +8,7 @@ import Stepper from 'bs-stepper'
 import Quill from 'quill'
 import Choices from 'choices.js'
 import CategoryOptions from './CategoryOptions.vue'
+import ClassMultiSelect from '@/Components/Lessons/ClassMultiSelect.vue'
 
 import 'bs-stepper/dist/css/bs-stepper.min.css'
 import 'quill/dist/quill.snow.css'
@@ -20,14 +21,13 @@ let stepper = null
 const page = usePage()
 
 const props = defineProps({
-  categories: Array,
-  teachers : Array,
-  lectures : Array,
-  lesson: Object,
-  timetablePeriods: {
-    type: Array,
-    default: () => []
-  }
+    categories: Array,
+    teachers: Array,
+    lectures: Array,
+    lesson: Object,
+    timetablePeriods: { type: Array, default: () => [] },
+    messageTemplates: { type: Array, default: () => [] },
+    leafCategories: { type: Array, default: () => [] },
 })
 
 // Watch for flash messages
@@ -62,23 +62,27 @@ watch(() => page.props.flash, (flash) => {
 }, { deep: true })
 
 const form = useForm({
-  id: props.lesson?.id,
-  name: props.lesson?.name ?? '',
-  short_description: props.lesson?.short_description ?? '',
-  description: props.lesson?.description ?? '',
-  category_id: props.lesson?.category_id ?? null,
-  teacher_id: props.lesson?.teacher_id ?? null,
-  timetable_period_ids: props.lesson?.timetable_periods?.map(p => p.id) ?? [],
-  semester: props.lesson?.semesters ?? [],
-  is_featured: Boolean(props.lesson?.is_featured) ?? false,
-  expiryPeriod: props.lesson?.expiry_period ?? 'lifetime',
-  expire_date: props.lesson?.expire_date ?? null,
-  is_free: Boolean(props.lesson?.is_free) ?? false,
-  price: props.lesson?.price ?? '',
-  discount_price: props.lesson?.discount_price ?? '',
-  image: null,
-  video_url: props.lesson?.video_url ?? '',
-  faqs: props.lesson?.faqs ?? []
+    id: props.lesson?.id,
+    name: props.lesson?.name ?? '',
+    short_description: props.lesson?.short_description ?? '',
+    description: props.lesson?.description ?? '',
+    strategies: props.lesson?.strategies ?? '',
+    category_id: props.lesson?.category_id ?? null,
+    class_ids: props.lesson?.classes?.map(c => c.id) ?? [],
+    teacher_id: props.lesson?.teacher_id ?? null,
+    lesson_message_template_id: props.lesson?.lesson_message_template_id ?? null,
+    timetable_period_ids: props.lesson?.timetable_periods?.map(p => p.id) ?? [],
+    semester: props.lesson?.semesters ?? [],
+    is_featured: Boolean(props.lesson?.is_featured) ?? false,
+    expiry_period: props.lesson?.expiry_period ?? 'lifetime',
+    expire_date: props.lesson?.expire_date ?? null,
+    publish_date: props.lesson?.publish_date ?? null,
+    is_free: Boolean(props.lesson?.is_free) ?? false,
+    price: props.lesson?.price ?? '',
+    discount_price: props.lesson?.discount_price ?? '',
+    image: null,
+    video_url: props.lesson?.video_url ?? '',
+    faqs: props.lesson?.faqs ?? []
 })
 
 const LectureForm = useForm({
@@ -119,22 +123,17 @@ const form_inputs = reactive({
 
 const inputsList = reactive([])
 
-onMounted(() => {
+onMounted(async () => {
+  await nextTick()
+
   // Stepper
   const stepperEl = document.querySelector('#stepper')
   if (stepperEl) {
     stepper = new Stepper(stepperEl, {
       linear: false,
-      animation: true
+      animation: false
     })
   }
-
-  document.querySelectorAll('.next-btn').forEach(btn => {
-    btn.addEventListener('click', () => stepper.next())
-  })
-  document.querySelectorAll('.prev-btn').forEach(btn => {
-    btn.addEventListener('click', () => stepper.previous())
-  })
 
   // Quill
   if (editor.value) {
@@ -175,6 +174,9 @@ onBeforeUnmount(() => {
   quill = null
   stepper = null
 })
+
+function goNext() { stepper?.next() }
+function goPrev() { stepper?.previous() }
 
 function addOption() {
   form_inputs.options.push({ value: '' })
@@ -514,7 +516,18 @@ function submitExternalLink() {
   <Head title="Edit Lesson" />
   <AppLayout>
     <div class="page-content-wrapper border">
-      <h1 class="h3 mb-3">Edit Lesson</h1>
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h1 class="h3 mb-0">Edit Lesson</h1>
+        <a
+          v-if="lesson?.id"
+          :href="route('lesson.show', lesson.id)"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-sm btn-primary"
+        >
+          <i class="bi bi-eye me-1"></i> معاينة كطالب
+        </a>
+      </div>
 
         <!-- Card START -->
         <div class="card border rounded-3 mb-5">
@@ -650,8 +663,8 @@ function submitExternalLink() {
 
                             <!-- Step 3 button -->
                             <div class="d-flex justify-content-between">
-                                <button class="btn btn-secondary prev-btn mb-0" disabled>Previous</button>
-                                <button class="btn btn-primary next-btn mb-0">Next</button>
+                                <button type="button" class="btn btn-secondary prev-btn mb-0" disabled>Previous</button>
+                                <button type="button" class="btn btn-primary next-btn mb-0" @click="goNext">Next</button>
                             </div>
                         </div>
                     </div>
@@ -756,19 +769,52 @@ function submitExternalLink() {
                             </div>
                             </div>
 
-                            <!-- Course time -->
+                            <!-- Expiry period -->
                             <div class="col-md-6">
-                            <label class="form-label">Expiry period</label>
-                            <select v-model="form.expiryPeriod" class="form-select" aria-label=".form-select-sm">
-                                <option value="lifetime">Lifetime</option>
-                                <option value="limited">Limited time</option>
-                            </select>
+                                <label class="form-label">Expiry period</label>
+                                <select v-model="form.expiry_period" class="form-select" aria-label=".form-select-sm">
+                                    <option value="lifetime">Lifetime</option>
+                                    <option value="limited">Limited time</option>
+                                </select>
                             </div>
 
                             <!-- Expire date -->
                             <div class="col-md-6">
-                            <label class="form-label"> Expire Date </label>
-                            <input class="form-control" type="date" v-model="form.expire_date" :disabled="form.expiryPeriod !== 'limited'">
+                                <label class="form-label">Expire Date</label>
+                                <input class="form-control" type="date" v-model="form.expire_date" :disabled="form.expiry_period !== 'limited'">
+                            </div>
+
+                            <!-- Publish Date -->
+                            <div class="col-md-6">
+                                <label class="form-label">Publish Date <small class="text-muted">(اختياري)</small></label>
+                                <input class="form-control" type="datetime-local" v-model="form.publish_date">
+                            </div>
+
+                            <!-- Message Template -->
+                            <div class="col-md-6">
+                                <label class="form-label">استراتيجيات التدريس <small class="text-muted">(اختياري)</small></label>
+                                <select v-model="form.lesson_message_template_id" class="form-select">
+                                    <option :value="null">-- بدون استراتيجية --</option>
+                                    <option v-for="tpl in props.messageTemplates" :key="tpl.id" :value="tpl.id">
+                                        {{ tpl.title }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Multi-class assignment -->
+                            <div class="col-12">
+                                <label class="form-label">تعيين الدرس لفصول متعددة <small class="text-muted">(اختياري)</small></label>
+                                <ClassMultiSelect
+                                    v-model="form.class_ids"
+                                    :options="props.leafCategories"
+                                    empty-text="لا توجد فصول دراسية متاحة."
+                                />
+                            </div>
+
+                            <!-- Strategies -->
+                            <div class="col-12">
+                                <label class="form-label">استراتيجيات التدريس <small class="text-muted">(اختياري)</small></label>
+                                <textarea class="form-control" rows="3" v-model="form.strategies" placeholder="اكتب استراتيجيات التدريس المقترحة..."></textarea>
                             </div>
 
                             <div class="col-md-12">
@@ -807,7 +853,7 @@ function submitExternalLink() {
 
                             <!-- Step 1 button -->
                             <div class="d-flex justify-content-end mt-3">
-                            <button class="btn btn-primary next-btn mb-0">Next</button>
+                            <button type="button" class="btn btn-primary next-btn mb-0" @click="goNext">Next</button>
                             </div>
                         </div>
                     <!-- Basic information END -->
@@ -854,8 +900,8 @@ function submitExternalLink() {
 
                         <!-- Step 2 button -->
                         <div class="d-flex justify-content-between mt-3">
-                        <button class="btn btn-secondary prev-btn mb-0">Previous</button>
-                        <button class="btn btn-primary next-btn mb-0">Next</button>
+                        <button type="button" class="btn btn-secondary prev-btn mb-0" @click="goPrev">Previous</button>
+                        <button type="button" class="btn btn-primary next-btn mb-0" @click="goNext">Next</button>
                         </div>
                     </div>
                     </div>
@@ -903,9 +949,9 @@ function submitExternalLink() {
 
                         <!-- Step 4 button -->
                         <div class="d-md-flex justify-content-between align-items-start mt-4">
-                        <button class="btn btn-secondary prev-btn mb-2 mb-md-0">Previous</button>
+                        <button type="button" class="btn btn-secondary prev-btn mb-2 mb-md-0" @click="goPrev">Previous</button>
                         <div class="text-md-end">
-                            <button :disabled="form.processing" @click="saveForm" class="btn btn-success mb-2 mb-sm-0">Submit a Lesson</button>
+                            <button type="button" :disabled="form.processing" @click="saveForm" class="btn btn-success mb-2 mb-sm-0">Submit a Lesson</button>
                         </div>
                         </div>
                     </div>

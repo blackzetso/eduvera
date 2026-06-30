@@ -9,9 +9,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+use App\Services\ParentProfileService;
 
 class ParentController extends Controller
 {
+    public function __construct(
+        protected ParentProfileService $parentProfile,
+    ) {}
+
     /**
      * Display a listing of parents/guardians.
      */
@@ -88,6 +93,16 @@ class ParentController extends Controller
     }
 
     /**
+     * Display the family command center for a guardian.
+     */
+    public function show($id)
+    {
+        $parent = User::where('user_type', 'guardian')->findOrFail($id);
+
+        return Inertia::render('Admin/theme1/Parents/Show', $this->parentProfile->forAdminShow($parent));
+    }
+
+    /**
      * Show the form for editing the specified parent.
      */
     public function edit($id)
@@ -111,6 +126,7 @@ class ParentController extends Controller
     public function update(Request $request, $id)
     {
         $parent = User::where('user_type', 'guardian')->findOrFail($id);
+        $this->authorize('family.editProfile', $parent);
 
         $data = $request->validate([
             'name'          => 'required|string|max:255',
@@ -130,14 +146,31 @@ class ParentController extends Controller
             'national_id' => $data['national_id'] ?? null,
         ]);
 
+        $previousStudentIds = $parent->students()->pluck('users.id')->all();
         $validStudents = [];
         if (!empty($data['student_ids'])) {
+            $this->authorize('family.linkStudent', $parent);
             $validStudents = User::where('user_type', 'student')
                 ->whereIn('id', $data['student_ids'])
                 ->pluck('id')
                 ->toArray();
+        } elseif (! empty($previousStudentIds)) {
+            $this->authorize('family.removeLink', $parent);
         }
         $parent->students()->sync($validStudents);
+
+        $added = array_diff($validStudents, $previousStudentIds);
+        $removed = array_diff($previousStudentIds, $validStudents);
+        $audit = app(\App\Services\PlatformAuditService::class);
+        foreach ($added as $studentId) {
+            $audit->record('family', 'link_student', $parent, null, ['student_id' => $studentId]);
+        }
+        foreach ($removed as $studentId) {
+            $audit->record('family', 'remove_student_link', $parent, ['student_id' => $studentId], null);
+        }
+        if ($parent->wasChanged()) {
+            $audit->record('family', 'edit_profile', $parent);
+        }
 
         return redirect()->route('admin.parents.index')->with('success', 'تم تحديث بيانات ولي الأمر بنجاح');
     }

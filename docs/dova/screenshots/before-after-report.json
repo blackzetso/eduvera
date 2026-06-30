@@ -1,0 +1,56 @@
+{
+  "capturedAt": "2026-06-05T13:10:00.000Z",
+  "baseUrl": "http://127.0.0.1:8000",
+  "before": {
+    "desktop": {
+      "heroHeightPx": 216,
+      "panelHeightPx": 620,
+      "composerInPanel": false,
+      "inputVisible": true,
+      "suggestionCount": 4
+    },
+    "mobile": {
+      "heroHeightPx": 216,
+      "panelHeightPx": 620,
+      "composerInPanel": false,
+      "inputVisible": true,
+      "suggestionCount": 4
+    }
+  },
+  "after": {
+    "desktop": {
+      "heroHeightPx": 132,
+      "panelHeightPx": 483,
+      "composerInPanel": true,
+      "inputVisible": true,
+      "suggestionCount": 4
+    },
+    "mobile": {
+      "heroHeightPx": 120,
+      "panelHeightPx": 532,
+      "composerInPanel": true,
+      "inputVisible": true,
+      "suggestionCount": 4
+    }
+  },
+  "improvements": {
+    "headerHeightReductionDesktop": "39%",
+    "panelHeightReductionDesktop": "22%",
+    "pinnedComposer": true,
+    "twoColumnSuggestions": true
+  },
+  "files": {
+    "before": [
+      "docs/dova/screenshots/before-panel-desktop.png",
+      "docs/dova/screenshots/before-panel-mobile.png",
+      "docs/dova/screenshots/before-viewport-desktop.png",
+      "docs/dova/screenshots/before-viewport-mobile.png"
+    ],
+    "after": [
+      "docs/dova/screenshots/after-panel-desktop.png",
+      "docs/dova/screenshots/after-panel-mobile.png",
+      "docs/dova/screenshots/after-viewport-desktop.png",
+      "docs/dova/screenshots/after-viewport-mobile.png"
+    ]
+  }
+}

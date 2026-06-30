@@ -1,0 +1,148 @@
+{
+  "parity": [
+    {
+      "id": "required_empty",
+      "field": { "key": "fld_1", "type": "text", "required": true, "validation": { "required": true } },
+      "values": {},
+      "effects": {},
+      "expectedValid": false,
+      "expectedRule": "required"
+    },
+    {
+      "id": "required_filled",
+      "field": { "key": "fld_1", "type": "text", "required": true, "validation": { "required": true } },
+      "values": { "fld_1": "hello" },
+      "effects": {},
+      "expectedValid": true
+    },
+    {
+      "id": "email_valid_standard",
+      "field": { "key": "fld_2", "type": "email", "required": false, "validation": {} },
+      "values": { "fld_2": "user@example.com" },
+      "effects": {},
+      "expectedValid": true
+    },
+    {
+      "id": "email_invalid_no_at",
+      "field": { "key": "fld_2", "type": "email", "required": false, "validation": {} },
+      "values": { "fld_2": "not-an-email" },
+      "effects": {},
+      "expectedValid": false,
+      "expectedRule": "email"
+    },
+    {
+      "id": "email_invalid_trailing_at",
+      "field": { "key": "fld_2", "type": "email", "required": false, "validation": {} },
+      "values": { "fld_2": "bad@" },
+      "effects": {},
+      "expectedValid": false,
+      "expectedRule": "email"
+    },
+    {
+      "id": "regex_valid_uppercase",
+      "field": { "key": "fld_3", "type": "text", "required": false, "validation": { "regex": "^[A-Z]{3}$" } },
+      "values": { "fld_3": "ABC" },
+      "effects": {},
+      "expectedValid": true
+    },
+    {
+      "id": "regex_invalid_lowercase",
+      "field": { "key": "fld_3", "type": "text", "required": false, "validation": { "regex": "^[A-Z]{3}$" } },
+      "values": { "fld_3": "abc" },
+      "effects": {},
+      "expectedValid": false,
+      "expectedRule": "regex"
+    },
+    {
+      "id": "unicode_length_ascii_min",
+      "field": { "key": "fld_4", "type": "text", "required": false, "validation": { "min_length": 3 } },
+      "values": { "fld_4": "ab" },
+      "effects": {},
+      "expectedValid": false,
+      "expectedRule": "min_length"
+    },
+    {
+      "id": "unicode_length_ascii_ok",
+      "field": { "key": "fld_4", "type": "text", "required": false, "validation": { "min_length": 3 } },
+      "values": { "fld_4": "abc" },
+      "effects": {},
+      "expectedValid": true
+    },
+    {
+      "id": "hidden_field_skipped",
+      "field": { "key": "fld_9", "type": "text", "required": true, "hidden": true, "validation": { "required": true } },
+      "values": {},
+      "effects": { "hiddenByLogic": { "fld_9": true } },
+      "expectedValid": true
+    },
+    {
+      "id": "logic_required_empty",
+      "field": { "key": "fld_8", "type": "text", "required": false, "validation": {} },
+      "values": {},
+      "effects": { "requiredByLogic": { "fld_8": true } },
+      "expectedValid": false,
+      "expectedRule": "required"
+    },
+    {
+      "id": "logic_required_filled",
+      "field": { "key": "fld_8", "type": "text", "required": false, "validation": {} },
+      "values": { "fld_8": "ok" },
+      "effects": { "requiredByLogic": { "fld_8": true } },
+      "expectedValid": true
+    },
+    {
+      "id": "multi_select_required_empty",
+      "field": { "key": "fld_13", "type": "multi_select", "required": true, "validation": { "required": true } },
+      "values": { "fld_13": [] },
+      "effects": {},
+      "expectedValid": false,
+      "expectedRule": "required"
+    },
+    {
+      "id": "multi_select_required_filled",
+      "field": { "key": "fld_13", "type": "multi_select", "required": true, "validation": { "required": true } },
+      "values": { "fld_13": ["a"] },
+      "effects": {},
+      "expectedValid": true
+    },
+    {
+      "id": "checkbox_required_empty",
+      "field": { "key": "fld_14", "type": "checkbox", "required": true, "validation": { "required": true } },
+      "values": { "fld_14": [] },
+      "effects": {},
+      "expectedValid": false,
+      "expectedRule": "required"
+    },
+    {
+      "id": "checkbox_required_filled",
+      "field": { "key": "fld_14", "type": "checkbox", "required": true, "validation": { "required": true } },
+      "values": { "fld_14": ["opt1"] },
+      "effects": {},
+      "expectedValid": true
+    },
+    {
+      "id": "skipped_section_field",
+      "field": { "key": "fld_10", "type": "text", "required": true, "sectionId": "sec_1", "validation": { "required": true } },
+      "values": {},
+      "effects": { "skippedSections": { "sec_1": true } },
+      "expectedValid": true
+    }
+  ],
+  "known_differences": [
+    {
+      "id": "email_plus_addressing",
+      "note": "PHP filter_var may accept some addresses the JS regex rejects",
+      "field": { "key": "fld_e1", "type": "email", "required": false, "validation": {} },
+      "values": { "fld_e1": "user+tag@example.com" },
+      "phpExpectedValid": true,
+      "jsExpectedValid": true
+    },
+    {
+      "id": "unicode_emoji_length",
+      "note": "mb_strlen (PHP) vs JS spread length may diverge on multi-codepoint graphemes",
+      "field": { "key": "fld_u1", "type": "text", "required": false, "validation": { "min_length": 2 } },
+      "values": { "fld_u1": "👨‍👩‍👧" },
+      "documentOnly": true
+    }
+  ]
+}

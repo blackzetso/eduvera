@@ -1,3 +1,29 @@
+/* خط المراعي — عربي افتراضي للوحة التحكم والواجهات */
+:root {
+    --bs-font-sans-serif: "Almarai", sans-serif;
+    --bs-body-font-family: "Almarai", sans-serif;
+}
+
+html,
+body,
+.font-sans {
+    font-family: "Almarai", sans-serif !important;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+.nav-link,
+.btn,
+.form-control,
+.form-select,
+.dropdown-menu,
+.modal-content,
+.table,
+.card,
+.offcanvas,
+.navbar {
+    font-family: "Almarai", sans-serif;
+}
 
 .pr-25 {
     padding-right: 25px;

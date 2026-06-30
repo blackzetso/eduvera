@@ -22,11 +22,7 @@
 
                 <div class="row g-4">
                     <!-- Left side START -->
-                    <div class="col-xl-3">
-                        <!-- Tab START -->
-                        <Sidebar/>
-                        <!-- Tab END -->
-                    </div>
+                    <Sidebar />
                     <!-- Left side END -->
 
                     <!-- Right side START -->

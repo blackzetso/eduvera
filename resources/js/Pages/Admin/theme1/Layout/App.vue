@@ -4,20 +4,21 @@
     import { usePage } from '@inertiajs/vue3'
     import { router } from '@inertiajs/vue3'
     import { route } from 'ziggy-js';
+    import { useDashboardUrl } from '@/composables/useDashboardUrl'
 
     const page = usePage()
+    const { dashboardUrl } = useDashboardUrl()
     const pendingExtraCount = computed(() => page.props.pendingExtraSessionsCount ?? 0)
+    const canteenEnabled = computed(() => page.props.modules?.canteen?.enabled ?? false)
 
     function changeLang(lang) {
         router.post(route('change.language'), { lang })
     }
 
-    import { useTranslations } from '@/composables/translations'
-    const { t } = useTranslations()
 </script>
 <template>
     <!-- **************** MAIN CONTENT START **************** -->
-    <main>
+    <main :dir="page.props.locale === 'en' ? 'ltr' : 'rtl'">
         <!-- Sidebar START -->
         <nav class="navbar sidebar navbar-expand-xl navbar-dark bg-dark">
 
@@ -35,123 +36,227 @@
                     <!-- Sidebar menu START -->
                     <ul class="navbar-nav flex-column" id="navbar-sidebar">
 
-                        <!-- Menu item 1 -->
-                        <li class="nav-item"><Link :href="route('admin.dashboard.index')" class="nav-link active"><i class="bi bi-house fa-fw me-2"></i>Dashboard</Link></li>
+                        <li class="nav-item">
+                            <Link :href="route('admin.dashboard.index')" class="nav-link">
+                                <i class="bi bi-house fa-fw me-2"></i>لوحة التحكم
+                            </Link>
+                        </li>
 
-                        <!-- Title -->
-                        <li class="nav-item ms-2 my-2">Base</li>
-                        <!-- Menu item 3 -->
-                        <li class="nav-item"> <Link class="nav-link" :href="route('admin.forms.index')"><i class="fas fa-user-graduate fa-fw me-2"></i>{{ t('form_builder') }}</Link></li>
+                        <li class="nav-item ms-2 my-2 text-muted small">عام</li>
 
-                        <li class="nav-item ms-2 my-2">Pages</li>
+                        <li class="nav-item">
+                            <Link class="nav-link" :href="route('admin.forms.index')">
+                                <i class="bi bi-ui-checks fa-fw me-2"></i>منشئ النماذج
+                            </Link>
+                        </li>
 
-                        <!-- menu item 2 -->
+                        <li class="nav-item ms-2 my-2 text-muted small">المحتوى التعليمي</li>
+
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="collapse" href="#collapsepage" role="button" aria-expanded="false" aria-controls="collapsepage">
-                                <i class="bi bi-basket fa-fw me-2"></i>{{ t('lessons') }}
+                                <i class="bi bi-journal-bookmark fa-fw me-2"></i>الدروس والمناهج
                             </a>
-                            <!-- Submenu -->
                             <ul class="nav collapse flex-column" id="collapsepage" data-bs-parent="#navbar-sidebar">
-                                <li class="nav-item"> <Link class="nav-link" :href="route('admin.lessons.index')">{{ t('all_lessons') }}</Link></li>
-                                <li class="nav-item"> <Link class="nav-link" :href="route('admin.categories.index')">{{ t('categories') }}</Link></li>
-                                <li class="nav-item"> <Link class="nav-link" :href="route('admin.subjects.index')">{{ t('subjects') }}</Link></li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('admin.lessons.index')">كل الدروس</Link>
+                                </li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('admin.categories.index')">المراحل والفئات</Link>
+                                </li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('admin.subjects.index')">المواد الدراسية</Link>
+                                </li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('admin.lesson-message-templates.index')">استراتيجيات الدروس</Link>
+                                </li>
                             </ul>
                         </li>
 
-                        <!-- Title -->
-                        <li class="nav-item ms-2 my-2">Academic</li>
+                        <li class="nav-item ms-2 my-2 text-muted small">الشؤون الأكاديمية</li>
 
-                        <!-- Timetable menu item -->
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="collapse" href="#collapsetimetable" role="button" aria-expanded="false" aria-controls="collapsetimetable">
-                                <i class="bi bi-calendar-week fa-fw me-2"></i>{{ t('timetable') }}
+                                <i class="bi bi-calendar-week fa-fw me-2"></i>الجدول الدراسي
                             </a>
-                            <!-- Submenu -->
                             <ul class="nav collapse flex-column" id="collapsetimetable" data-bs-parent="#navbar-sidebar">
-                                <li class="nav-item"> <Link class="nav-link" :href="route('admin.timetable.edit')">{{ t('design_timetable') }}</Link></li>
-                                <li class="nav-item"> <Link class="nav-link" :href="route('admin.timetable.show')">{{ t('view_timetable') }}</Link></li>
-                                <li class="nav-item"> <Link class="nav-link" :href="route('admin.timetable.filters.backup-report')"><i class="bi bi-search fa-fw me-2"></i>الحصص المفرغة والاحتياطية</Link></li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('admin.timetable.edit')">منشئ الجدول</Link>
+                                </li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('admin.timetable.edit', { step: 6 })">عرض الجدول</Link>
+                                </li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('department-plan.index')">خطة القسم</Link>
+                                </li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('admin.timetable.filters.backup-report')">تقرير الحصص الاحتياطية</Link>
+                                </li>
                             </ul>
                         </li>
 
-                        <!-- Menu item 3 -->
-                        <li class="nav-item"> <Link class="nav-link" :href="route('admin.students.index')"><i class="fas fa-user-graduate fa-fw me-2"></i>{{ t('students') }}</Link></li>
+                        <li class="nav-item">
+                            <Link class="nav-link" :href="route('admin.admissions.index')">
+                                <i class="bi bi-inbox fa-fw me-2"></i>صندوق القبول
+                            </Link>
+                        </li>
 
-                        <!-- Parents menu item -->
-                        <li class="nav-item"> <Link class="nav-link" :href="route('admin.parents.index')"><i class="bi bi-person-heart fa-fw me-2"></i>أولياء الأمور</Link></li>
+                        <li class="nav-item">
+                            <Link class="nav-link" :href="route('admin.admissions.visits.index')">
+                                <i class="bi bi-calendar-event fa-fw me-2"></i>زيارات الحرم
+                            </Link>
+                        </li>
 
-                        <!-- Menu item 4 -->
+                        <li class="nav-item">
+                            <Link class="nav-link" :href="route('admin.students.index')">
+                                <i class="fas fa-user-graduate fa-fw me-2"></i>الطلاب
+                            </Link>
+                        </li>
+
+                        <li class="nav-item">
+                            <Link class="nav-link" :href="route('admin.parents.index')">
+                                <i class="bi bi-person-heart fa-fw me-2"></i>أولياء الأمور
+                            </Link>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="collapse" href="#collapseattendance" role="button" aria-expanded="false" aria-controls="collapseattendance">
+                                <i class="bi bi-calendar-check fa-fw me-2"></i>الحضور والغياب
+                            </a>
+                            <ul class="nav collapse flex-column" id="collapseattendance" data-bs-parent="#navbar-sidebar">
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('admin.attendances.dashboard')">لوحة الحضور</Link>
+                                </li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('admin.attendances.index')">سجلات الحضور</Link>
+                                </li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('admin.attendances.mark.form')">تسجيل حضور حصة</Link>
+                                </li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('admin.attendances.alerts')">تنبيهات الغياب</Link>
+                                </li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('admin.attendances.thresholds')">إعداد العتبات</Link>
+                                </li>
+                            </ul>
+                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="collapse" href="#collapseinstructors" role="button" aria-expanded="false" aria-controls="collapseinstructors">
-                                <i class="fas fa-user-tie fa-fw me-2"></i>{{ t('teachers') }}
+                                <i class="fas fa-user-tie fa-fw me-2"></i>المدرسون
                             </a>
-                            <!-- Submenu -->
                             <ul class="nav collapse flex-column" id="collapseinstructors" data-bs-parent="#navbar-sidebar">
-                                <li class="nav-item"> <Link class="nav-link" :href="route('admin.teachers.index')">{{ t('all_teachers') }}</Link></li>
-                                <li class="nav-item"> <Link class="nav-link" :href="route('admin.timetable.filters.backup')">الحصص الاحتياطية</Link></li>
-                                <li class="nav-item"> <Link class="nav-link" :href="route('admin.timetable.filters.backup-report')"><i class="bi bi-search fa-fw me-2"></i>تقرير الحصص</Link></li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('admin.teachers.index')">كل المدرسين</Link>
+                                </li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('admin.timetable.filters.backup')">الحصص الاحتياطية</Link>
+                                </li>
                             </ul>
                         </li>
 
-                        <!-- Menu item 5 -->
-                        <li class="nav-item"> <a class="nav-link" href="#"><i class="far fa-comment-dots fa-fw me-2"></i>{{ t('reviews') }}</a></li>
+                        <li class="nav-item ms-2 my-2 text-muted small">مركز الذكاء الاصطناعي</li>
 
-                        <!-- Menu item 6 -->
-                        <li class="nav-item"> <a class="nav-link" href="#"><i class="far fa-chart-bar fa-fw me-2"></i>{{ t('earnings') }}</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="collapse" href="#collapsedova" role="button" aria-expanded="false" aria-controls="collapsedova">
+                                <i class="bi bi-robot fa-fw me-2"></i>مركز AI — دوفا
+                            </a>
+                            <ul class="nav collapse flex-column" id="collapsedova" data-bs-parent="#navbar-sidebar">
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.dova-knowledge.dashboard')">مركز معرفة دوفا</Link></li>
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.dova-knowledge.faqs.dashboard')">إدارة الأسئلة الشائعة</Link></li>
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.dova-knowledge.gaps.index')">فجوات المعرفة</Link></li>
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.dova-knowledge.sources.index')">مصادر المعرفة</Link></li>
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.dova-knowledge.sync.index')">مركز المزامنة</Link></li>
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.dova-knowledge.explorer.index')">مستكشف المعرفة</Link></li>
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.dova-knowledge.testing.index')">مركز الاختبار</Link></li>
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.dova-knowledge.ai-usage.index')">استخدام AI</Link></li>
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.dova-knowledge.unanswered.index')">أسئلة بلا إجابة</Link></li>
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.dova-knowledge.analytics.index')">التحليلات</Link></li>
+                            </ul>
+                        </li>
 
-                        <!-- Menu item 7 - Wallet -->
-                        <li class="nav-item"> <Link class="nav-link" :href="route('admin.wallet.index')"><i class="bi bi-wallet fa-fw me-2"></i>{{ t('wallet') }}</Link></li>
+                        <li class="nav-item ms-2 my-2 text-muted small">إدارة الموقع</li>
 
-                        <!-- Menu item - Live Streams (collapsible) -->
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="collapse" href="#collapsewebsite" role="button" aria-expanded="false" aria-controls="collapsewebsite">
+                                <i class="bi bi-globe2 fa-fw me-2"></i>الموقع — School Talent
+                            </a>
+                            <ul class="nav collapse flex-column" id="collapsewebsite" data-bs-parent="#navbar-sidebar">
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.website.index')">نظرة عامة</Link></li>
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.website.landing-builder.index')">منشئ الصفحة الرئيسية</Link></li>
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.website.chrome.edit')">الرأس والتذييل</Link></li>
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.website.content-blocks.index')">كتل المحتوى</Link></li>
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.website.ui-labels.edit')">تسميات الواجهة</Link></li>
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.website.hero')">قسم البطل</Link></li>
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.website.stages.index')">المراحل</Link></li>
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.website.events.index')">الفعاليات</Link></li>
+                                <li class="nav-item"><Link class="nav-link" :href="route('admin.website.media.index')">مكتبة الوسائط</Link></li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item ms-2 my-2 text-muted small">النظام والخدمات</li>
+
+                        <li class="nav-item">
+                            <Link class="nav-link" :href="route('admin.wallet.index')">
+                                <i class="bi bi-wallet fa-fw me-2"></i>محفظة التخزين
+                            </Link>
+                        </li>
+
+                        <li v-if="canteenEnabled" class="nav-item">
+                            <a class="nav-link" data-bs-toggle="collapse" href="#collapsecanteen" role="button" aria-expanded="false" aria-controls="collapsecanteen">
+                                <i class="bi bi-shop fa-fw me-2"></i>الكافتيريا
+                            </a>
+                            <ul class="nav collapse flex-column" id="collapsecanteen" data-bs-parent="#navbar-sidebar">
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('canteen.dashboard')">لوحة التحكم</Link>
+                                </li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('canteen.pos')">نقطة البيع</Link>
+                                </li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('canteen.products.index')">المنتجات</Link>
+                                </li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('canteen.transactions.index')">المعاملات</Link>
+                                </li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('canteen.settings.index')">الإعدادات</Link>
+                                </li>
+                            </ul>
+                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="collapse" href="#collapselivestreams" role="button" aria-expanded="false" aria-controls="collapselivestreams">
                                 <i class="bi bi-broadcast fa-fw me-2 text-danger"></i>البث المباشر
                             </a>
-                            <!-- Submenu -->
                             <ul class="nav collapse flex-column" id="collapselivestreams" data-bs-parent="#navbar-sidebar">
-                                <li class="nav-item"><Link class="nav-link" :href="route('admin.live-streams.index')"><i class="bi bi-collection-play fa-fw me-2"></i>البثوث المباشرة</Link></li>
-                                <li class="nav-item"><Link class="nav-link" :href="route('admin.live-streams.details')"><i class="bi bi-sliders fa-fw me-2"></i>تفاصيل البث</Link></li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('admin.live-streams.index')">البثوث المباشرة</Link>
+                                </li>
+                                <li class="nav-item">
+                                    <Link class="nav-link" :href="route('admin.live-streams.details')">إعدادات البث</Link>
+                                </li>
                             </ul>
                         </li>
 
-                        <!-- Menu item 8 -->
-                        <li class="nav-item"> <Link class="nav-link" :href="route('admin.settings.index')"><i class="fas fa-user-cog fa-fw me-2"></i>Admin Settings</Link></li>
-
-                        <!-- Menu item 9 -->
                         <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="collapse" href="#collapseauthentication" role="button" aria-expanded="false" aria-controls="collapseauthentication">
-                                <i class="bi bi-lock fa-fw me-2"></i>Authentication
-                            </a>
-                            <!-- Submenu -->
-                            <ul class="nav collapse flex-column" id="collapseauthentication" data-bs-parent="#navbar-sidebar">
-                                <li class="nav-item"> <a class="nav-link" href="sign-up.html">Sign Up</a></li>
-                                <li class="nav-item"> <a class="nav-link" href="sign-in.html">Sign In</a></li>
-                                <li class="nav-item"> <a class="nav-link" href="forgot-password.html">Forgot Password</a></li>
-                                <li class="nav-item"> <a class="nav-link" href="admin-error-404.html">Error 404</a></li>
-                            </ul>
+                            <Link class="nav-link" :href="route('admin.settings.index')">
+                                <i class="fas fa-user-cog fa-fw me-2"></i>إعدادات النظام
+                            </Link>
                         </li>
-
-                        <!-- Title -->
-                        <li class="nav-item ms-2 my-2">Documentation</li>
-
-                        <!-- Menu item 10 -->
-                        <li class="nav-item"> <a class="nav-link" href="docs/index.html"><i class="far fa-clipboard fa-fw me-2"></i>Documentation</a></li>
-
-                        <!-- Menu item 11 -->
-                        <li class="nav-item"> <a class="nav-link" href="docs/changelog.html"><i class="fas fa-sitemap fa-fw me-2"></i>Changelog</a></li>
                     </ul>
                     <!-- Sidebar menu end -->
 
                     <!-- Sidebar footer START -->
                     <div class="px-3 mt-auto pt-3">
                         <div class="d-flex align-items-center justify-content-between text-primary-hover">
-                                <Link class="h5 mb-0 text-body" :href="route('admin.settings.index')" data-bs-toggle="tooltip" data-bs-placement="top" title="Settings">
+                                <Link class="h5 mb-0 text-body" :href="route('admin.settings.index')" data-bs-toggle="tooltip" data-bs-placement="top" title="الإعدادات">
                                     <i class="bi bi-gear-fill"></i>
                                 </Link>
-                                <a class="h5 mb-0 text-body" href="index.html" data-bs-toggle="tooltip" data-bs-placement="top" title="Home">
+                                <Link class="h5 mb-0 text-body" :href="route('home')" data-bs-toggle="tooltip" data-bs-placement="top" title="الموقع">
                                     <i class="bi bi-globe"></i>
-                                </a>
-                                <Link as="button" method="post" :href="route('logout')" class="h5 mb-0 text-body" data-bs-placement="top" title="Sign out">
+                                </Link>
+                                <Link as="button" method="post" :href="route('logout')" class="h5 mb-0 text-body" data-bs-placement="top" title="تسجيل الخروج">
                                     <i class="bi bi-power fa-fw"></i>
                                 </Link>
                         </div>
@@ -207,7 +312,7 @@
                                 <div class="nav my-3 my-xl-0 flex-nowrap align-items-center">
                                     <div class="nav-item w-100">
                                         <form class="position-relative">
-                                            <input class="form-control pe-5 bg-secondary bg-opacity-10 border-0" type="search" placeholder="Search" aria-label="Search">
+                                            <input class="form-control pe-5 bg-secondary bg-opacity-10 border-0" type="search" placeholder="بحث..." aria-label="بحث">
                                             <button class="bg-transparent px-2 py-0 border-0 position-absolute top-50 end-0 translate-middle-y" type="submit"><i class="fas fa-search fs-6 text-primary"></i></button>
                                         </form>
                                     </div>
@@ -303,7 +408,7 @@
                                 <li class="nav-item ms-2 ms-md-3 dropdown">
                                     <!-- Avatar -->
                                     <a class="avatar avatar-sm p-0" href="#" id="profileDropdown" role="button" data-bs-auto-close="outside" data-bs-display="static" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <img class="avatar-img rounded-circle" src="/front/theme1/images/avatar/01.jpg" alt="avatar">
+                                        <img class="avatar-img rounded-circle" :src="$page.props.auth.user?.profile_photo_url" :alt="$page.props.auth.user?.name" @error="$event.target.src='/front/theme1/images/avatar/01.jpg'">
                                     </a>
 
                                     <!-- Profile dropdown START -->
@@ -313,20 +418,29 @@
                                             <div class="d-flex align-items-center">
                                                 <!-- Avatar -->
                                                 <div class="avatar me-3 mb-3">
-                                                    <img class="avatar-img rounded-circle shadow" src="/front/theme1/images/avatar/01.jpg" alt="avatar">
+                                                    <img class="avatar-img rounded-circle shadow" :src="$page.props.auth.user?.profile_photo_url" :alt="$page.props.auth.user?.name" @error="$event.target.src='/front/theme1/images/avatar/01.jpg'">
                                                 </div>
                                                 <div>
-                                                    <a class="h6 mt-2 mt-sm-0" href="#">Lori Ferguson</a>
-                                                    <p class="small m-0">example@gmail.com</p>
+                                                    <a class="h6 mt-2 mt-sm-0" href="#">{{ $page.props.auth.user?.name }}</a>
+                                                    <p class="small m-0">{{ $page.props.auth.user?.email }}</p>
                                                 </div>
                                             </div>
                                         </li>
                         <li> <hr class="dropdown-divider"></li>
                                         <!-- Links -->
+                                        <li>
+                                            <Link class="dropdown-item" :href="dashboardUrl">
+                                                <i class="bi bi-speedometer2 fa-fw me-2"></i>Dashboard
+                                            </Link>
+                                        </li>
                                         <li><a class="dropdown-item" href="#"><i class="bi bi-person fa-fw me-2"></i>Edit Profile</a></li>
                                         <li><a class="dropdown-item" href="#"><i class="bi bi-gear fa-fw me-2"></i>Account Settings</a></li>
                                         <li><a class="dropdown-item" href="#"><i class="bi bi-info-circle fa-fw me-2"></i>Help</a></li>
-                                        <li><a class="dropdown-item bg-danger-soft-hover" href="#"><i class="bi bi-power fa-fw me-2"></i>Sign Out</a></li>
+                                        <li>
+                                            <Link as="button" method="post" :href="route('logout')" class="dropdown-item bg-danger-soft-hover">
+                                                <i class="bi bi-power fa-fw me-2"></i>تسجيل الخروج
+                                            </Link>
+                                        </li>
                                         <li> <hr class="dropdown-divider"></li>
 
                                         <!-- Dark mode options START -->
@@ -376,59 +490,4 @@
     <div class="back-top"><i class="bi bi-arrow-up-short position-absolute top-50 start-50 translate-middle"></i></div>
 </template>
 
-<!-- Global: admin sidebar must scroll when menu exceeds viewport (Bootstrap sets overflow-y: visible on xl) -->
-<style>
-@media (min-width: 1200px) {
-  .sidebar.navbar-expand-xl {
-    overflow: hidden;
-  }
-  .sidebar.navbar-expand-xl > .offcanvas.offcanvas-start {
-    flex: 1 1 0;
-    min-height: 0;
-    max-height: none;
-    display: flex !important;
-    flex-direction: column !important;
-    height: auto !important;
-  }
-  .sidebar.navbar-expand-xl .offcanvas .offcanvas-body.sidebar-content {
-    flex: 1 1 auto !important;
-    flex-grow: 1 !important;
-    min-height: 0 !important;
-    overflow: hidden !important;
-  }
-  /* Scroll the nav list only; footer stays at bottom of sidebar */
-  .sidebar.navbar-expand-xl .offcanvas .offcanvas-body.sidebar-content #navbar-sidebar {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
-  }
-  .sidebar.navbar-expand-xl .offcanvas .offcanvas-body.sidebar-content #navbar-sidebar::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
-  }
-}
-
-@media (max-width: 1199.98px) {
-  .sidebar.navbar-expand-xl .offcanvas-body.sidebar-content {
-    max-height: 100vh;
-    overflow: hidden !important;
-    display: flex;
-    flex-direction: column;
-  }
-  .sidebar.navbar-expand-xl .offcanvas-body.sidebar-content #navbar-sidebar {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  .sidebar.navbar-expand-xl .offcanvas-body.sidebar-content #navbar-sidebar::-webkit-scrollbar {
-    display: none;
-  }
-}
-</style>
+<!-- Sidebar scroll rules: resources/css/eduvera-responsive.css -->

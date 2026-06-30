@@ -1,0 +1,136 @@
+.tt-setup-modal .modal-dialog {
+  max-width: 920px;
+}
+
+.tt-setup-modal .modal-content {
+  border-radius: 1rem;
+  border: none;
+  overflow: hidden;
+}
+
+.tt-setup__header {
+  background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+  color: #fff;
+  padding: 1.25rem 1.5rem;
+}
+
+.tt-setup__stepper {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  padding: 0.75rem 1rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.tt-setup__step-pill {
+  flex-shrink: 0;
+  padding: 0.35rem 0.65rem;
+  border-radius: 2rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border: 1px solid #dee2e6;
+  background: #fff;
+  color: #6c757d;
+}
+
+.tt-setup__step-pill.is-active {
+  background: rgba(13, 110, 253, 0.12);
+  border-color: #0d6efd;
+  color: #0d6efd;
+}
+
+.tt-setup__step-pill.is-done {
+  background: rgba(25, 135, 84, 0.1);
+  border-color: #198754;
+  color: #198754;
+}
+
+.tt-setup__body {
+  padding: 1.5rem;
+  max-height: min(65vh, 520px);
+  overflow-y: auto;
+}
+
+.tt-setup__card {
+  border: 1px solid #e9ecef;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: #fafbfc;
+}
+
+.tt-setup__day-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.65rem;
+}
+
+.tt-setup__day-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.65rem;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.tt-setup__day-check:has(input:checked) {
+  border-color: #0d6efd;
+  background: rgba(13, 110, 253, 0.06);
+}
+
+.tt-setup__stage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.65rem;
+}
+
+.tt-setup__stage-card {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.65rem;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  font-weight: 600;
+}
+
+.tt-setup__stage-card:has(input:checked) {
+  border-color: #0d6efd;
+  background: rgba(13, 110, 253, 0.08);
+  color: #0d6efd;
+}
+
+.tt-setup__preview-table td,
+.tt-setup__preview-table th {
+  font-size: 0.88rem;
+  vertical-align: middle;
+}
+
+.tt-setup__footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e9ecef;
+  background: #f8f9fa;
+}
+
+.tt-setup__summary-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tt-setup__summary-list li {
+  padding: 0.35rem 0;
+  border-bottom: 1px dashed #e9ecef;
+  font-size: 0.9rem;
+}
+
+.tt-setup__summary-list li:last-child {
+  border-bottom: 0;
+}

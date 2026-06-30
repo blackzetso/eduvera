@@ -10,12 +10,15 @@ class LoginResponse implements LoginResponseContract
     {
         $user = $request->user();
 
-        if ($user->user_type === 'admin') {
-            return redirect()->route('admin.dashboard.index');
-        }elseif($user->user_type === 'student'){
-            return redirect()->route('student.dashboard');
-        }
-
-        return redirect()->route('teacher.dashboard.index');
+        return match ($user->user_type) {
+            'admin' => redirect()->route('admin.dashboard.index'),
+            'student' => redirect()->route('student.dashboard'),
+            'guardian' => redirect()->route('guardian.dashboard'),
+            'teacher' => redirect()->route('teacher.dashboard.index'),
+            'control_staff' => redirect()->route('admin.attendances.dashboard'),
+            'social_worker', 'nurse' => redirect()->route('admin.attendances.alerts'),
+            'department_head' => redirect()->route('department-plan.index'),
+            default => redirect()->route('home'),
+        };
     }
 }

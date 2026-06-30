@@ -1,5 +1,5 @@
 <script setup>
-    import { reactive, onMounted, ref, onBeforeUnmount, watch } from 'vue'
+    import { reactive, onMounted, ref, onBeforeUnmount, watch, nextTick } from 'vue'
     import AppLayout from '@/Pages/Admin/theme1/Layout/App.vue'
     import { Head, useForm ,Link } from '@inertiajs/vue3'
     import { route } from 'ziggy-js'
@@ -8,6 +8,7 @@
     import Quill from 'quill'
     import Choices from 'choices.js'
     import CategoryOptions from './CategoryOptions.vue'
+    import ClassMultiSelect from '@/Components/Lessons/ClassMultiSelect.vue'
 
     import 'bs-stepper/dist/css/bs-stepper.min.css'
     import 'quill/dist/quill.snow.css'
@@ -18,16 +19,12 @@
     let stepper = null
 
     const props = defineProps({
-    categories: Array,
-    teachers : Array,
-    timetablePeriods: {
-      type: Array,
-      default: () => []
-    },
-    fromPeriod: {
-      type: Object,
-      default: null
-    }
+        categories: Array,
+        teachers: Array,
+        timetablePeriods: { type: Array, default: () => [] },
+        fromPeriod: { type: Object, default: null },
+        messageTemplates: { type: Array, default: () => [] },
+        leafCategories: { type: Array, default: () => [] },
     })
 
     // form
@@ -35,14 +32,18 @@
         name: '',
         short_description: '',
         description: '',
+        strategies: '',
         category_id: null,
+        class_ids: [],
         teacher_id: null,
-        timetable_period_id: null, // للحفاظ على التوافق مع from_period
-        timetable_period_ids: [], // للاختيار المتعدد
+        lesson_message_template_id: null,
+        timetable_period_id: null,
+        timetable_period_ids: [],
         semester: [],
         is_featured: false,
-        expiryPeriod: 'lifetime',
+        expiry_period: 'lifetime',
         expire_date: null,
+        publish_date: null,
         is_free: false,
         price: '',
         discount_price: '',
@@ -62,15 +63,10 @@
     form.image = file
     }
 
-    const is_free = ref(false)
-    const price = ref('')
     const enableDiscount = ref(false)
-    const expiryPeriod = ref('')
 
-    watch(is_free, (val) => {
-    if (val) {
-        enableDiscount.value = false
-    }
+    watch(() => form.is_free, (val) => {
+        if (val) enableDiscount.value = false
     })
 
 
@@ -83,7 +79,9 @@
 
     const inputsList = reactive([])
 
-    onMounted(() => {
+    onMounted(async () => {
+    await nextTick()
+
     // Stepper
     const stepperEl = document.querySelector('#stepper')
     if (stepperEl) {
@@ -92,14 +90,6 @@
         animation: true
         })
     }
-
-
-    document.querySelectorAll('.next-btn').forEach(btn => {
-        btn.addEventListener('click', () => stepper.next())
-    })
-    document.querySelectorAll('.prev-btn').forEach(btn => {
-        btn.addEventListener('click', () => stepper.previous())
-    })
 
     //   Quill
     if (editor.value) {
@@ -139,6 +129,9 @@
     quill = null
     stepper = null
     })
+
+    function goNext() { stepper?.next() }
+    function goPrev() { stepper?.previous() }
 
     function addOption() {
     form_inputs.options.push({ value: '' })
@@ -300,49 +293,80 @@
 										</small>
 									</div>
 
-									<!-- Language -->
-									<div class="col-md-6">
-										<label class="form-label">semester</label>
-										<select v-model="semester" class="form-select js-choice border-0 z-index-9 bg-transparent" multiple="multiple" aria-label=".form-select-sm" data-max-item-count="3" data-remove-item-button="true">
-											<option value="first" >First Semester</option>
-											<option value="second" >Second semester</option>
-										</select>
+								<!-- Language -->
+								<div class="col-md-6">
+									<label class="form-label">Semester</label>
+									<select v-model="form.semester" class="form-select js-choice border-0 z-index-9 bg-transparent" multiple="multiple" aria-label=".form-select-sm" data-max-item-count="3" data-remove-item-button="true">
+										<option value="first">First Semester</option>
+										<option value="second">Second Semester</option>
+									</select>
+								</div>
+
+								<!-- Switch -->
+								<div class="col-md-6 d-flex align-items-center justify-content-start mt-5">
+									<div class="form-check form-switch form-check-md">
+										<input v-model="form.is_featured" class="form-check-input" type="checkbox" id="checkPrivacy1">
+										<label class="form-check-label" for="checkPrivacy1">Check this for featured Lesson</label>
 									</div>
+								</div>
 
-									<!-- Switch -->
-									<div class="col-md-6 d-flex align-items-center justify-content-start mt-5">
-										<div class="form-check form-switch form-check-md">
-											<input v-model="form.is_featured" class="form-check-input" type="checkbox" id="checkPrivacy1">
-											<label class="form-check-label" for="checkPrivacy1">Check this for featured Lesson</label>
-										</div>
-									</div>
+								<!-- Expiry period -->
+								<div class="col-md-6">
+									<label class="form-label">Expiry period</label>
+									<select v-model="form.expiry_period" class="form-select" aria-label=".form-select-sm">
+										<option value="lifetime">Lifetime</option>
+										<option value="limited">Limited time</option>
+									</select>
+								</div>
 
-									<!-- Lesson time -->
-									<div class="col-md-6">
-										<label class="form-label">Expiry period</label>
-										<select v-model="expiryPeriod" class="form-select" aria-label=".form-select-sm">
-                                            <option value="lifetime">Lifetime</option>
-                                            <option value="limited">Limited time</option>
-                                        </select>
-									</div>
+								<!-- Expire Date -->
+								<div class="col-md-6">
+									<label class="form-label">Expire Date</label>
+									<input class="form-control" type="date" v-model="form.expire_date" :disabled="form.expiry_period !== 'limited'">
+								</div>
 
-									<!-- Total lecture -->
-									<div class="col-md-6">
-										<label class="form-label"> Expire Date </label>
-										<input class="form-control" type="date" v-model="form.expire_date" :disabled="expiryPeriod !== 'limited'" placeholder="Enter total lecture" >
-									</div>
+								<!-- Publish Date -->
+								<div class="col-md-6">
+									<label class="form-label">Publish Date <small class="text-muted">(اختياري)</small></label>
+									<input class="form-control" type="datetime-local" v-model="form.publish_date">
+								</div>
 
+								<!-- Message Template -->
+								<div class="col-md-6">
+									<label class="form-label">استراتيجيات التدريس <small class="text-muted">(اختياري)</small></label>
+									<select v-model="form.lesson_message_template_id" class="form-select">
+										<option :value="null">-- بدون استراتيجية --</option>
+										<option v-for="tpl in props.messageTemplates" :key="tpl.id" :value="tpl.id">
+											{{ tpl.title }}
+										</option>
+									</select>
+								</div>
 
-									<!-- Lesson description -->
-									<div class="col-12">
-                                        <label class="form-label">Add description</label>
-                                        <!-- محرر Quill -->
-                                        <div ref="editor" class="bg-body border rounded h-400px"></div>
-                                    </div>
+								<!-- Multi-class assignment -->
+								<div class="col-12">
+									<label class="form-label">تعيين الدرس لفصول متعددة <small class="text-muted">(اختياري - يمكن اختيار أكثر من فصل)</small></label>
+									<ClassMultiSelect
+										v-model="form.class_ids"
+										:options="props.leafCategories"
+										empty-text="لا توجد فصول دراسية متاحة."
+									/>
+								</div>
+
+								<!-- Strategies -->
+								<div class="col-12">
+									<label class="form-label">استراتيجيات التدريس <small class="text-muted">(اختياري)</small></label>
+									<textarea class="form-control" rows="3" v-model="form.strategies" placeholder="اكتب استراتيجيات التدريس المقترحة..."></textarea>
+								</div>
+
+								<!-- Lesson description -->
+								<div class="col-12">
+									<label class="form-label">Add description</label>
+									<div ref="editor" class="bg-body border rounded h-400px"></div>
+								</div>
 
 									<!-- Step 1 button -->
 									<div class="d-flex justify-content-end mt-3">
-										<button class="btn btn-primary next-btn mb-0">Next</button>
+										<button type="button" class="btn btn-primary next-btn mb-0" @click="goNext">Next</button>
 									</div>
 								</div>
 								<!-- Basic information START -->
@@ -389,8 +413,8 @@
 
 									<!-- Step 2 button -->
 									<div class="d-flex justify-content-between mt-3">
-										<button class="btn btn-secondary prev-btn mb-0">Previous</button>
-										<button class="btn btn-primary next-btn mb-0">Next</button>
+										<button type="button" class="btn btn-secondary prev-btn mb-0" @click="goPrev">Previous</button>
+										<button type="button" class="btn btn-primary next-btn mb-0" @click="goNext">Next</button>
 									</div>
 								</div>
 							</div>
@@ -405,37 +429,30 @@
 
 								<div class="row g-4">
 
-									<!-- Edit faq START -->
 									<div class="col-12">
-                                        <div class="row" >
-                                            <div class="col-md-12" >
-                                                <label>is Free Lesson</label>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>Is Free Lesson</label>
                                                 <div class="form-check form-switch d-flex form-check-md">
-                                                    <input class="form-check-input" v-model="is_free" type="checkbox" />
+                                                    <input class="form-check-input" v-model="form.is_free" type="checkbox" />
                                                 </div>
                                             </div>
-                                            <!-- Lesson price -->
-                                            <div class="col-md-6">
+                                            <div class="col-md-6 mt-2">
                                                 <label class="form-label">Lesson price</label>
-                                                <input type="number" class="form-control mb-2" v-model="form.price" :disabled="is_free" placeholder="Enter Lesson price" >
+                                                <input type="number" class="form-control mb-2" v-model="form.price" :disabled="form.is_free" placeholder="Enter Lesson price">
                                             </div>
-
-                                            <!-- Lesson discount -->
-                                            <div class="col-md-6">
+                                            <div class="col-md-6 mt-2">
                                                 <label class="form-label">Discount price</label>
-                                                <input class="form-control" type="number" v-model="form.discount_price" :disabled="!enableDiscount" placeholder="Enter discount" >
+                                                <input class="form-control" type="number" v-model="form.discount_price" :disabled="!enableDiscount" placeholder="Enter discount">
                                                 <div class="col-12 mt-1 mb-0">
                                                     <div class="form-check small mb-0">
-                                                        <input class="form-check-input" v-model="enableDiscount"  type="checkbox" id="checkBox1" checked>
-                                                        <label class="form-check-label" for="checkBox1">
-                                                            Enable this Discount
-                                                        </label>
+                                                        <input class="form-check-input" v-model="enableDiscount" type="checkbox" id="checkBox1">
+                                                        <label class="form-check-label" for="checkBox1">Enable this Discount</label>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 									</div>
-									<!-- Edit faq END -->
 
 									<!-- Tags START -->
 									<!-- <div class="col-12">
@@ -470,10 +487,10 @@
 
 									<!-- Step 4 button -->
 									<div class="d-md-flex justify-content-between align-items-start mt-4">
-										<button class="btn btn-secondary prev-btn mb-2 mb-md-0">Previous</button>
+										<button type="button" class="btn btn-secondary prev-btn mb-2 mb-md-0" @click="goPrev">Previous</button>
 										<!-- <button class="btn btn-light me-auto ms-md-2 mb-2 mb-md-0">Preview Lesson</button> -->
 										<div class="text-md-end">
-											<button :disabled="form.processing" @click="saveForm" class="btn btn-success mb-2 mb-sm-0">Submit a Lesson</button>
+											<button type="button" :disabled="form.processing" @click="saveForm" class="btn btn-success mb-2 mb-sm-0">Submit a Lesson</button>
                                             <!-- Only On Instructor List -->
 											<!-- <p class="mb-0 small mt-1">Once you click "Submit a Lesson", your Lesson will be uploaded and marked as pending for review.</p> -->
 										</div>

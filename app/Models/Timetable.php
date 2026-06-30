@@ -11,6 +11,11 @@ class Timetable extends Model
         'name',
         'academic_year',
         'status',
+        'settings',
+    ];
+
+    protected $casts = [
+        'settings' => 'array',
     ];
 
     public function days(): HasMany

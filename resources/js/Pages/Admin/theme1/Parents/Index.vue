@@ -103,7 +103,11 @@ function deleteParent(id, name) {
                 </thead>
                 <tbody>
                   <tr v-for="parent in filteredParents" :key="parent.id">
-                    <td><strong>{{ parent.name }}</strong></td>
+                    <td>
+                      <Link :href="route('admin.parents.show', parent.id)" class="fw-semibold text-decoration-none">
+                        {{ parent.name }}
+                      </Link>
+                    </td>
                     <td>{{ parent.email }}</td>
                     <td>{{ parent.phone || '-' }}</td>
                     <td>{{ parent.job_title || '-' }}</td>
@@ -124,8 +128,16 @@ function deleteParent(id, name) {
                     <td>{{ formatDate(parent.created_at) }}</td>
                     <td>
                       <Link
+                        :href="route('admin.parents.show', parent.id)"
+                        class="btn btn-sm btn-primary me-2"
+                        title="مركز العائلة"
+                      >
+                        <i class="bi bi-house-heart"></i>
+                      </Link>
+                      <Link
                         :href="route('admin.parents.edit', parent.id)"
                         class="btn btn-sm btn-warning me-2"
+                        title="تعديل"
                       >
                         <i class="bi bi-pencil"></i>
                       </Link>

@@ -79,9 +79,7 @@ function saveWord(word) {
 
       <div class="row g-4">
         <!-- Sidebar -->
-        <div class="col-xl-3">
-          <Sidebar />
-        </div>
+        <Sidebar />
 
         <!-- Main -->
         <div class="col-xl-9">

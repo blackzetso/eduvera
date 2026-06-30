@@ -4,9 +4,11 @@
     //import { route } from 'vendor/tightenco/ziggy/src/js';
     import { route } from 'ziggy-js';
     import { Ziggy } from '@/ziggy';
+    import { useDashboardUrl } from '@/composables/useDashboardUrl'
 
     const page = usePage()
     const user = page.props.auth.user
+    const { dashboardUrl } = useDashboardUrl()
 </script>
 <template>
     <html>    <!-- Navbar -->
@@ -268,7 +270,7 @@
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                         >
-                            <img class="avatar-img rounded-circle" src="/front/theme1/images/avatar/01.jpg" alt="avatar" />
+                            <img class="avatar-img rounded-circle" :src="user.profile_photo_url" :alt="user.name" @error="$event.target.src='/front/theme1/images/avatar/01.jpg'" />
                         </a>
 
                         <ul class="dropdown-menu dropdown-animation dropdown-menu-end shadow pt-3" aria-labelledby="profileDropdown">
@@ -277,7 +279,7 @@
                             <div class="d-flex align-items-center">
                                 <!-- Avatar -->
                                 <div class="avatar me-3">
-                                <img class="avatar-img rounded-circle shadow" src="/front/theme1/images/avatar/01.jpg" alt="avatar" />
+                                <img class="avatar-img rounded-circle shadow" :src="user.profile_photo_url" :alt="user.name" @error="$event.target.src='/front/theme1/images/avatar/01.jpg'" />
                                 </div>
                                 <div>
                                 <span class="h6">{{ user.name }}</span>
@@ -289,6 +291,11 @@
                             <li><hr class="dropdown-divider" /></li>
 
                             <!-- Links -->
+                            <li>
+                            <Link class="dropdown-item" :href="dashboardUrl">
+                                <i class="bi bi-speedometer2 fa-fw me-2"></i> Dashboard
+                            </Link>
+                            </li>
                             <li>
                             <Link class="dropdown-item" href="/profile">
                                 <i class="bi bi-person fa-fw me-2"></i> Edit Profile

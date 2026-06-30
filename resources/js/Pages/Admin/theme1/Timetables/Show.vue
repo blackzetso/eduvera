@@ -208,7 +208,7 @@ function removeAssignment(id) {
         <h4>عرض الجدول الدراسي</h4>
         <div class="d-flex gap-2 mb-3 flex-wrap">
           <Link :href="route('admin.timetable.edit')" class="btn btn-primary">
-            <i class="bi bi-pencil"></i> تصميم الجدول
+            <i class="bi bi-pencil"></i> منشئ الجدول
           </Link>
           <div class="dropdown">
             <button class="btn btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown">

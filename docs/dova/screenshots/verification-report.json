@@ -1,0 +1,14 @@
+{
+  "url": "http://127.0.0.1:8000/",
+  "launcherVisible": true,
+  "panelOpens": true,
+  "greeting": "Hi, I'm Dova. How can I help you today?",
+  "suggestionCount": 4,
+  "actionChipCount": 1,
+  "consoleErrors": [],
+  "screenshots": [
+    "docs/dova/screenshots/dova-homepage-launcher.png",
+    "docs/dova/screenshots/dova-homepage-panel-open.png",
+    "docs/dova/screenshots/dova-homepage-with-actions.png"
+  ]
+}

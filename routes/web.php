@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\web\WebController;
 use App\Http\Controllers\admin\FileController;
 use App\Http\Controllers\admin\FormController;
+use App\Http\Controllers\admin\FormSubmissionController;
 use App\Http\Controllers\admin\LessonController;
 use App\Http\Controllers\admin\LectureController;
 use App\Http\Controllers\admin\SettingController;
@@ -14,14 +15,45 @@ use App\Http\Controllers\admin\LanguageController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\WalletController;
 use App\Http\Controllers\admin\TimetableController;
+use App\Http\Controllers\admin\DepartmentPlanController;
 use App\Http\Controllers\admin\SubjectController;
 use App\Http\Controllers\admin\TeacherController;
 use App\Http\Controllers\admin\StudentController;
+use App\Http\Controllers\admin\AdmissionApplicationController;
+use App\Http\Controllers\admin\AdmissionDocumentSettingsController;
+use App\Http\Controllers\admin\AttendanceController;
+use App\Http\Controllers\admin\TeacherAbsenceDemoController;
+use App\Http\Controllers\teacher\AttendanceController as TeacherAttendanceController;
+use App\Http\Controllers\web\GuardianPortalController;
 use App\Http\Controllers\teacher\TimetableController as TeacherTimetableController;
 use App\Http\Controllers\teacher\DashboardController as TeacherDashboardController;
 use App\Http\Controllers\teacher\LiveStreamController as TeacherLiveStreamController;
 use App\Http\Controllers\web\FormController as WebFormController;
 use App\Http\Controllers\admin\LiveStreamController;
+use App\Http\Controllers\admin\Website\WebsiteDashboardController;
+use App\Http\Controllers\admin\Website\WebsiteSettingsController;
+use App\Http\Controllers\admin\Website\WebsiteStageController;
+use App\Http\Controllers\admin\Website\WebsiteFacilityController;
+use App\Http\Controllers\admin\Website\WebsiteEventController;
+use App\Http\Controllers\admin\Website\WebsitePostController;
+use App\Http\Controllers\admin\Website\WebsiteTestimonialController;
+use App\Http\Controllers\admin\Website\WebsiteSuccessStoryController;
+use App\Http\Controllers\admin\Website\WebsiteCareerController;
+use App\Http\Controllers\admin\Website\WebsiteMediaController;
+use App\Http\Controllers\admin\Website\WebsiteLandingBuilderController;
+use App\Http\Controllers\admin\Website\WebsiteNavLinkController;
+use App\Http\Controllers\admin\Website\WebsiteAnnouncementController;
+use App\Http\Controllers\admin\Website\WebsiteChromeController;
+use App\Http\Controllers\admin\Website\WebsiteUiLabelsController;
+use App\Http\Controllers\admin\Website\WebsiteContentBlockController;
+use App\Http\Controllers\admin\Website\WebsiteGalleryController;
+use App\Http\Controllers\admin\Website\WebsiteCtaController;
+use App\Http\Controllers\admin\DovaKnowledge\DovaKnowledgeController;
+use App\Http\Controllers\admin\DovaKnowledge\DovaUnansweredController;
+use App\Http\Controllers\admin\DovaKnowledge\DovaFaqGovernanceController;
+use App\Http\Controllers\admin\DovaKnowledge\DovaFaqController;
+use App\Http\Controllers\admin\DovaKnowledge\DovaKnowledgeGapController;
+use App\Http\Controllers\admin\DovaKnowledge\DovaAiController;
 use App\Http\Controllers\admin\LiveStreamQuizController;
 use App\Http\Controllers\admin\LiveStreamExamController;
 use App\Http\Controllers\StreamWatchController;
@@ -41,27 +73,71 @@ use App\Http\Controllers\StreamWatchController;
 Route::get('/build-check', function () {
     $manifestPath = public_path('build/manifest.json');
     $manifestExists = file_exists($manifestPath);
-    $buildDirExists = is_dir(public_path('build'));
-    $assetsDirExists = is_dir(public_path('build/assets'));
-    $html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Build Check</title></head><body style="font-family:monospace; padding:20px; background:#f5f5f5;">';
+    $manifestAppFile = null;
+    $manifestAppExists = false;
+    $viteHtml = '';
+
+    if ($manifestExists) {
+        $manifest = json_decode(file_get_contents($manifestPath), true) ?: [];
+        $manifestAppFile = $manifest['resources/js/app.js']['file'] ?? null;
+        if ($manifestAppFile) {
+            $manifestAppExists = file_exists(public_path('build/' . $manifestAppFile));
+        }
+    }
+
+    try {
+        $viteHtml = \Illuminate\Support\Facades\Vite::withEntryPoints(['resources/js/app.js'])->toHtml();
+    } catch (\Throwable $e) {
+        $viteHtml = 'خطأ: ' . $e->getMessage();
+    }
+
+    preg_match('/build\/assets\/app-[A-Za-z0-9_-]+\.js/', $viteHtml, $viteScriptMatch);
+    $viteAppScript = $viteScriptMatch[0] ?? 'غير موجود';
+    $cachedViewsCount = count(glob(storage_path('framework/views/*.php')) ?: []);
+    $hotPath = public_path('hot');
+    $hotExists = file_exists($hotPath);
+    $hotActive = app(\App\Support\ViteHotFileGuard::class)->hotFileActive();
+
+    $html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Build Check</title></head><body style="font-family:monospace; padding:20px; background:#f5f5f5; max-width:900px;">';
     $html .= '<h1>تشخيص الـ Build على السيرفر</h1>';
     $html .= '<ul>';
     $html .= '<li><strong>Laravel يعمل:</strong> نعم</li>';
-    $html .= '<li><strong>مسار الـ manifest:</strong> ' . $manifestPath . '</li>';
-    $html .= '<li><strong>ملف manifest.json موجود:</strong> ' . ($manifestExists ? 'نعم' : '<span style="color:red">لا - ارفع مجلد public/build</span>') . '</li>';
-    $html .= '<li><strong>مجلد build/ موجود:</strong> ' . ($buildDirExists ? 'نعم' : 'لا') . '</li>';
-    $html .= '<li><strong>مجلد build/assets/ موجود:</strong> ' . ($assetsDirExists ? 'نعم' : 'لا') . '</li>';
+    $html .= '<li><strong>APP_URL:</strong> ' . e(config('app.url')) . '</li>';
+    $html .= '<li><strong>مسار الـ manifest:</strong> ' . e($manifestPath) . '</li>';
+    $html .= '<li><strong>ملف public/hot موجود:</strong> ' . ($hotExists ? 'نعم' : 'لا') . '</li>';
+    $html .= '<li><strong>Vite dev server نشط (5173):</strong> ' . ($hotActive ? 'نعم — وضع التطوير' : ($hotExists ? '<span style="color:red">لا (hot قديم — يُحذف تلقائياً)</span>' : 'لا — يستخدم public/build')) . '</li>';
+    $html .= '<li><strong>ملف manifest.json موجود:</strong> ' . ($manifestExists ? 'نعم' : '<span style="color:red">لا — شغّل: npm run build</span>') . '</li>';
+    $html .= '<li><strong>ملف app.js في manifest:</strong> ' . e($manifestAppFile ?? '—') . '</li>';
+    $html .= '<li><strong>ملف app.js موجود على القرص:</strong> ' . ($manifestAppExists ? 'نعم' : '<span style="color:red">لا</span>') . '</li>';
+    $html .= '<li><strong>ما يولّده @vite الآن:</strong> ' . e($viteAppScript) . '</li>';
+    $html .= '<li><strong>Views مُجمّعة (cache):</strong> ' . $cachedViewsCount . ' ملف</li>';
     $html .= '<li><strong>APP_DEBUG:</strong> ' . (config('app.debug') ? 'true' : 'false') . '</li>';
     $html .= '</ul>';
-    if (!$manifestExists) {
-        $html .= '<p style="color:red;">رفع مجلد public/build كاملاً (بداخله manifest.json و assets/) إلى السيرفر في المسار public/build/</p>';
+
+    if ($manifestAppFile && $viteAppScript !== 'غير موجود' && ! str_contains($viteHtml, $manifestAppFile)) {
+        $html .= '<p style="color:red; font-weight:bold;">⚠️ تعارض: manifest يشير لملف مختلف عما يُخدم في الصفحة. شغّل: php artisan view:clear && php artisan optimize:clear</p>';
     }
+
+    if ($manifestAppFile && ! $manifestAppExists) {
+        $html .= '<p style="color:red;">ارفع مجلد public/build كاملاً (manifest + assets) أو شغّل: npm run build</p>';
+    }
+
+    if (! $manifestExists && ! $hotActive) {
+        $html .= '<p style="color:red; font-weight:bold;">⚠️ لا يوجد build ولا Vite dev. شغّل: <code>composer dev</code> أو <code>npm run build</code> ثم <code>composer serve</code></p>';
+    }
+
+    $html .= '<p style="color:#555; margin-top:1.5rem;"><strong>تشغيل موصى به:</strong> تطوير = <code>composer dev</code> · إنتاج محلي = <code>npm run build</code> ثم <code>composer serve</code></p>';
     $html .= '</body></html>';
     return response($html)->header('Content-Type', 'text/html; charset=utf-8');
 })->name('build.check');
 
 // Public Routes (للطلاب والزوار)
 Route::get('/', [WebController::class, 'home'])->name('home');
+Route::get('/school-talent/{type}/{slug}', [WebController::class, 'schoolTalentArticle'])
+    ->whereIn('type', ['news', 'blog'])
+    ->name('school-talent.article');
+Route::redirect('/school-talent', '/', 301);
+Route::get('/explore', [WebController::class, 'explore'])->name('explore');
 
 // Public live stream join pages (no auth required)
 Route::get('/join/{liveStream}', [LiveStreamController::class, 'guestJoin'])->name('live-streams.guest-join');
@@ -88,15 +164,27 @@ Route::get('/teachers', [WebController::class, 'teachers'])->name('teachers');
 Route::get('/blog', [WebController::class, 'blog'])->name('blog');
 Route::get('form/{id}', [WebFormController::class, 'index'])->name('web.form');
 
+// Dova Platform Copilot (action-oriented assistant API)
+Route::prefix('dova')->name('dova.')->group(function () {
+    Route::get('/copilot/context', [\App\Http\Controllers\Api\DovaCopilotController::class, 'context'])->name('copilot.context');
+    Route::post('/copilot/suggest', [\App\Http\Controllers\Api\DovaCopilotController::class, 'suggest'])->name('copilot.suggest');
+    Route::post('/copilot/feedback', [\App\Http\Controllers\Api\DovaCopilotController::class, 'feedback'])->name('copilot.feedback');
+    Route::post('/copilot/voice/transcribe', [\App\Http\Controllers\Api\DovaCopilotController::class, 'transcribe'])->name('copilot.voice.transcribe');
+    Route::post('/copilot/voice/recognition', [\App\Http\Controllers\Api\DovaCopilotController::class, 'logRecognition'])->name('copilot.voice.recognition');
+});
+
 // Language Switcher
-Route::get('set-locale/{locale}', function ($locale) {
-    session(['locale' => $locale]);
-    app()->setLocale($locale);
+Route::get('set-locale/{locale}', function (string $locale) {
+    $lang = in_array($locale, ['ar', 'en'], true) ? $locale : config('app.locale', 'ar');
+    session(['locale' => $lang]);
+    app()->setLocale($lang);
     return back();
 });
 
 Route::post('/change-language', function (Request $request) {
-    $lang = $request->input('lang', 'en');
+    $lang = in_array($request->input('lang'), ['ar', 'en'], true)
+        ? $request->input('lang')
+        : config('app.locale', 'ar');
     session(['locale' => $lang]);
     app()->setLocale($lang);
     return back();
@@ -478,6 +566,10 @@ Route::middleware([
     Route::resource('forms', FormController::class);
     Route::patch('/forms/{id}/status', [FormController::class, 'toggleStatus'])->name('forms.status');
     Route::get('/forms/search/{phrase}', [FormController::class, 'search'])->name('forms.search');
+    Route::get('/forms/templates/list', [FormController::class, 'templates'])->name('forms.templates');
+    Route::get('/forms/templates/{key}', [FormController::class, 'template'])->name('forms.template');
+    Route::post('/forms/translate-bilingual', [FormController::class, 'translateBilingual'])->name('forms.translate-bilingual');
+    Route::get('/forms/{form}/submissions', [FormSubmissionController::class, 'index'])->name('forms.submissions.index');
 
     // Lesson Categories
     Route::resource('categories', CategoryController::class);
@@ -495,6 +587,12 @@ Route::middleware([
     Route::resource('lessons', LessonController::class);
     Route::patch('/lessons/{id}/status', [LessonController::class, 'toggleStatus'])->name('lessons.status');
     Route::get('/lessons/search/{phrase}', [LessonController::class, 'search'])->name('lessons.search');
+
+    // Lesson Message Templates
+    Route::resource('lesson-message-templates', \App\Http\Controllers\admin\LessonMessageTemplateController::class)
+        ->except(['create', 'edit', 'show']);
+    Route::patch('/lesson-message-templates/{lessonMessageTemplate}/status', [\App\Http\Controllers\admin\LessonMessageTemplateController::class, 'toggleStatus'])
+        ->name('lesson-message-templates.toggle-status');
 
     // Lectures
     Route::resource('lectures', LectureController::class);
@@ -533,6 +631,8 @@ Route::middleware([
     Route::post('settings/google-meet', [SettingController::class, 'updateGoogleMeetSettings'])->name('settings.google-meet.update');
     Route::get('settings/hms', [SettingController::class, 'hmsSettings'])->name('settings.hms');
     Route::post('settings/hms', [SettingController::class, 'updateHmsSettings'])->name('settings.hms.update');
+    Route::get('settings/coverage', [SettingController::class, 'coverageSettings'])->name('settings.coverage');
+    Route::post('settings/coverage', [SettingController::class, 'updateCoverageSettings'])->name('settings.coverage.update');
     Route::get('live-streams/details', [SettingController::class, 'liveStreamDetails'])->name('live-streams.details');
     Route::post('live-streams/details', [SettingController::class, 'updateLiveStreamDetails'])->name('live-streams.details.update');
     Route::resource('language', LanguageController::class);
@@ -578,12 +678,40 @@ Route::middleware([
     Route::post('students/bulk-data/import', [StudentController::class, 'bulkDataImport'])->name('students.bulk-data.import');
     Route::resource('teachers', TeacherController::class);
     Route::resource('students', StudentController::class);
+    Route::get('admissions/settings/documents', [AdmissionDocumentSettingsController::class, 'index'])->name('admissions.settings.documents');
+    Route::put('admissions/settings/documents', [AdmissionDocumentSettingsController::class, 'update'])->name('admissions.settings.documents.update');
+    Route::get('admissions/visits', [AdmissionApplicationController::class, 'visits'])->name('admissions.visits.index');
+    Route::resource('admissions', AdmissionApplicationController::class)->only(['index', 'show']);
+    Route::post('admissions/{admission}/decision/accept', [AdmissionApplicationController::class, 'accept'])->name('admissions.decision.accept');
+    Route::post('admissions/{admission}/decision/reject', [AdmissionApplicationController::class, 'reject'])->name('admissions.decision.reject');
+    Route::post('admissions/{admission}/decision/waitlist', [AdmissionApplicationController::class, 'waitlist'])->name('admissions.decision.waitlist');
+    Route::post('admissions/{admission}/decision/withdraw', [AdmissionApplicationController::class, 'withdraw'])->name('admissions.decision.withdraw');
+    Route::post('admissions/{admission}/convert', [AdmissionApplicationController::class, 'convertToStudent'])->name('admissions.convert');
+    Route::post('admissions/{admission}/stage', [AdmissionApplicationController::class, 'transitionStage'])->name('admissions.stage');
+    Route::post('admissions/{admission}/assign', [AdmissionApplicationController::class, 'assignOfficer'])->name('admissions.assign');
+    Route::post('admissions/{admission}/notes', [AdmissionApplicationController::class, 'storeNote'])->name('admissions.notes.store');
+    Route::patch('admissions/{admission}/applicants/{applicant}', [AdmissionApplicationController::class, 'updateApplicant'])->name('admissions.applicants.update');
+    Route::patch('admissions/{admission}/contacts/{contact}', [AdmissionApplicationController::class, 'updateContact'])->name('admissions.contacts.update');
+    Route::patch('admissions/{admission}/visits/{visit}', [AdmissionApplicationController::class, 'updateVisit'])->name('admissions.visits.update');
+    Route::patch('admissions/{admission}/documents/{document}', [AdmissionApplicationController::class, 'updateDocument'])->name('admissions.documents.update');
+    Route::patch('admissions/{admission}/documents/{document}/review', [AdmissionApplicationController::class, 'reviewDocument'])->name('admissions.documents.review');
+    Route::post('admissions/{admission}/documents/{document}/upload', [AdmissionApplicationController::class, 'uploadDocument'])->name('admissions.documents.upload');
+    Route::delete('admissions/{admission}/documents/{document}/file', [AdmissionApplicationController::class, 'removeDocumentFile'])->name('admissions.documents.remove-file');
+    Route::get('admissions/{admission}/documents/{document}/download', [AdmissionApplicationController::class, 'downloadDocument'])->name('admissions.documents.download');
+    Route::post('students/{student}/lifecycle/promote', [\App\Http\Controllers\admin\StudentLifecycleController::class, 'promote'])->name('students.lifecycle.promote');
+    Route::post('students/{student}/lifecycle/transfer', [\App\Http\Controllers\admin\StudentLifecycleController::class, 'transfer'])->name('students.lifecycle.transfer');
+    Route::post('students/{student}/lifecycle/withdraw', [\App\Http\Controllers\admin\StudentLifecycleController::class, 'withdraw'])->name('students.lifecycle.withdraw');
+    Route::post('students/{student}/lifecycle/re-enroll', [\App\Http\Controllers\admin\StudentLifecycleController::class, 'reEnroll'])->name('students.lifecycle.re-enroll');
+    Route::post('students/{student}/lifecycle/graduate', [\App\Http\Controllers\admin\StudentLifecycleController::class, 'graduate'])->name('students.lifecycle.graduate');
+    Route::post('students/{student}/lifecycle/status', [\App\Http\Controllers\admin\StudentLifecycleController::class, 'changeStatus'])->name('students.lifecycle.status');
+    Route::post('students/{student}/lifecycle/guardians', [\App\Http\Controllers\admin\StudentLifecycleController::class, 'updateGuardians'])->name('students.lifecycle.guardians');
     Route::get('parents/bulk-data', [\App\Http\Controllers\admin\ParentController::class, 'bulkData'])->name('parents.bulk-data');
     Route::get('parents/bulk-data/template', [\App\Http\Controllers\admin\ParentController::class, 'bulkDataTemplate'])->name('parents.bulk-data.template');
     Route::post('parents/bulk-data/import', [\App\Http\Controllers\admin\ParentController::class, 'bulkDataImport'])->name('parents.bulk-data.import');
     Route::resource('parents', \App\Http\Controllers\admin\ParentController::class);
     Route::get('/timetable', [TimetableController::class, 'edit'])->name('timetable.edit');
     Route::put('/timetable', [TimetableController::class, 'update'])->name('timetable.update');
+    Route::post('/timetable/save-framework', [TimetableController::class, 'saveFramework'])->name('timetable.save-framework');
     Route::get('/timetable/show', [TimetableController::class, 'show'])->name('timetable.show');
     Route::get('/timetable/periods/list', [TimetableController::class, 'listPeriods'])->name('timetable.periods.list');
     Route::post('/timetable/days', [TimetableController::class, 'addDay'])->name('timetable.days.add');
@@ -599,6 +727,164 @@ Route::middleware([
     Route::get('/timetable/filters/backup', [TimetableController::class, 'filterBackupAssignments'])->name('timetable.filters.backup');
     Route::get('/timetable/filters/teacher/{id}', [TimetableController::class, 'filterTeacherSchedule'])->name('timetable.filters.teacher');
     Route::get('/timetable/filters/backup-report', [TimetableController::class, 'filterBackupByDateRange'])->name('timetable.filters.backup-report');
+    Route::get('/timetable/daily-coverage/preview', [\App\Http\Controllers\admin\DailyAbsenceCoverageController::class, 'preview'])->name('timetable.daily-coverage.preview');
+    Route::post('/timetable/daily-coverage/save-draft', [\App\Http\Controllers\admin\DailyAbsenceCoverageController::class, 'saveDraft'])->name('timetable.daily-coverage.save-draft');
+    Route::post('/timetable/daily-coverage/approve', [\App\Http\Controllers\admin\DailyAbsenceCoverageController::class, 'approve'])->name('timetable.daily-coverage.approve');
+    Route::match(['get', 'post'], '/timetable/daily-coverage/distribution-report', [\App\Http\Controllers\admin\DailyAbsenceCoverageController::class, 'distributionReport'])->name('timetable.daily-coverage.distribution-report');
+    Route::post('/timetable/daily-coverage/notify-substitute', [\App\Http\Controllers\admin\DailyAbsenceCoverageController::class, 'notifySubstitute'])->name('timetable.daily-coverage.notify-substitute');
+    Route::post('/timetable/daily-coverage/mark-absent', [\App\Http\Controllers\admin\DailyAbsenceCoverageController::class, 'markTeacherAbsent'])->name('timetable.daily-coverage.mark-absent');
+    Route::post('/timetable/daily-coverage/close', [\App\Http\Controllers\admin\DailyAbsenceCoverageController::class, 'close'])->name('timetable.daily-coverage.close');
+    Route::get('/timetable/daily-coverage/swap-candidates', [\App\Http\Controllers\admin\DailyAbsenceCoverageController::class, 'swapCandidates'])->name('timetable.daily-coverage.swap-candidates');
+    Route::post('/timetable/daily-coverage/swap-preview', [\App\Http\Controllers\admin\DailyAbsenceCoverageController::class, 'swapPreview'])->name('timetable.daily-coverage.swap-preview');
+    Route::post('/timetable/daily-coverage/apply-swap', [\App\Http\Controllers\admin\DailyAbsenceCoverageController::class, 'applySwap'])->name('timetable.daily-coverage.apply-swap');
+    Route::post('/timetable/daily-coverage/cancel-lesson', [\App\Http\Controllers\admin\DailyAbsenceCoverageController::class, 'cancelLesson'])->name('timetable.daily-coverage.cancel-lesson');
+
+    Route::post('/absence/demo-data', [TeacherAbsenceDemoController::class, 'store'])->name('absence.demo-data');
+
+    // Attendance
+    Route::prefix('attendances')->name('attendances.')->group(function () {
+        Route::get('/dashboard', [AttendanceController::class, 'dashboard'])->name('dashboard');
+        Route::get('/', [AttendanceController::class, 'index'])->name('index');
+        Route::get('/mark', [AttendanceController::class, 'markForm'])->name('mark.form');
+        Route::post('/mark', [AttendanceController::class, 'mark'])->name('mark');
+        Route::post('/bulk-upload', [AttendanceController::class, 'bulkUpload'])->name('bulk-upload');
+        Route::get('/import/{batch}', [AttendanceController::class, 'importPreview'])->name('import.preview');
+        Route::post('/import/{batch}/confirm', [AttendanceController::class, 'importConfirm'])->name('import.confirm');
+        Route::get('/thresholds', [AttendanceController::class, 'thresholds'])->name('thresholds');
+        Route::post('/thresholds', [AttendanceController::class, 'storeThreshold'])->name('thresholds.store');
+        Route::get('/alerts', [AttendanceController::class, 'alerts'])->name('alerts');
+        Route::post('/alerts/{alert}/acknowledge', [AttendanceController::class, 'acknowledgeAlert'])->name('alerts.acknowledge');
+        Route::post('/check-thresholds', [AttendanceController::class, 'runThresholdCheck'])->name('check-thresholds');
+    });
+    Route::get('students/{student}/attendance', [AttendanceController::class, 'studentTab'])->name('students.attendance');
+
+    // Website Management (School Talent CMS)
+    Route::prefix('website')->name('website.')->group(function () {
+        Route::get('/', [WebsiteDashboardController::class, 'index'])->name('index');
+        Route::post('/import-defaults', [WebsiteDashboardController::class, 'importDefaults'])->name('import-defaults');
+
+        Route::get('/landing-settings', [WebsiteSettingsController::class, 'landing'])->name('landing');
+        Route::put('/landing-settings', [WebsiteSettingsController::class, 'updateLanding'])->name('landing.update');
+
+        Route::get('/chrome', [WebsiteChromeController::class, 'edit'])->name('chrome.edit');
+        Route::match(['put', 'post'], '/chrome', [WebsiteChromeController::class, 'update'])->name('chrome.update');
+        Route::get('/nav-links', [WebsiteNavLinkController::class, 'index'])->name('nav-links.index');
+        Route::post('/nav-links', [WebsiteNavLinkController::class, 'store'])->name('nav-links.store');
+        Route::put('/nav-links/{navLink}', [WebsiteNavLinkController::class, 'update'])->name('nav-links.update');
+        Route::delete('/nav-links/{navLink}', [WebsiteNavLinkController::class, 'destroy'])->name('nav-links.destroy');
+        Route::put('/nav-links-reorder', [WebsiteNavLinkController::class, 'reorder'])->name('nav-links.reorder');
+        Route::get('/announcements', [WebsiteAnnouncementController::class, 'index'])->name('announcements.index');
+        Route::post('/announcements', [WebsiteAnnouncementController::class, 'store'])->name('announcements.store');
+        Route::put('/announcements/{announcement}', [WebsiteAnnouncementController::class, 'update'])->name('announcements.update');
+        Route::delete('/announcements/{announcement}', [WebsiteAnnouncementController::class, 'destroy'])->name('announcements.destroy');
+        Route::put('/announcements-badge', [WebsiteAnnouncementController::class, 'updateBadge'])->name('announcements.badge');
+        Route::get('/ctas', [WebsiteCtaController::class, 'index'])->name('ctas.index');
+        Route::put('/ctas', [WebsiteCtaController::class, 'update'])->name('ctas.update');
+        Route::get('/ui-labels', [WebsiteUiLabelsController::class, 'edit'])->name('ui-labels.edit');
+        Route::put('/ui-labels', [WebsiteUiLabelsController::class, 'update'])->name('ui-labels.update');
+        Route::get('/content-blocks', [WebsiteContentBlockController::class, 'index'])->name('content-blocks.index');
+        Route::get('/content-blocks/{block}', [WebsiteContentBlockController::class, 'edit'])->name('content-blocks.edit');
+        Route::put('/content-blocks/{block}', [WebsiteContentBlockController::class, 'update'])->name('content-blocks.update');
+        Route::get('/gallery', [WebsiteGalleryController::class, 'index'])->name('gallery.index');
+        Route::post('/gallery', [WebsiteGalleryController::class, 'store'])->name('gallery.store');
+        Route::match(['put', 'post'], '/gallery/{gallery}', [WebsiteGalleryController::class, 'update'])->name('gallery.update');
+        Route::delete('/gallery/{gallery}', [WebsiteGalleryController::class, 'destroy'])->name('gallery.destroy');
+
+        Route::prefix('landing-builder')->name('landing-builder.')->group(function () {
+            Route::get('/', [WebsiteLandingBuilderController::class, 'index'])->name('index');
+            Route::get('/preview', [WebsiteLandingBuilderController::class, 'preview'])->name('preview');
+            Route::post('/sections', [WebsiteLandingBuilderController::class, 'storeSection'])->name('sections.store');
+            Route::put('/reorder', [WebsiteLandingBuilderController::class, 'reorder'])->name('reorder');
+            Route::post('/publish', [WebsiteLandingBuilderController::class, 'publish'])->name('publish');
+            Route::put('/status', [WebsiteLandingBuilderController::class, 'setStatus'])->name('status');
+            Route::post('/revisions', [WebsiteLandingBuilderController::class, 'saveRevision'])->name('revisions.store');
+            Route::post('/revisions/{revision}/restore', [WebsiteLandingBuilderController::class, 'restoreRevision'])->name('revisions.restore');
+            Route::get('/sections/{section}/edit', [WebsiteLandingBuilderController::class, 'edit'])->name('edit');
+            Route::put('/sections/{section}', [WebsiteLandingBuilderController::class, 'update'])->name('sections.update');
+            Route::post('/sections/{section}/duplicate', [WebsiteLandingBuilderController::class, 'duplicate'])->name('sections.duplicate');
+            Route::delete('/sections/{section}', [WebsiteLandingBuilderController::class, 'destroy'])->name('sections.destroy');
+        });
+        Route::get('/hero', [WebsiteSettingsController::class, 'hero'])->name('hero');
+        Route::match(['put', 'post'], '/hero', [WebsiteSettingsController::class, 'updateHero'])->name('hero.update');
+        Route::get('/school-info', [WebsiteSettingsController::class, 'schoolInfo'])->name('school-info');
+        Route::match(['put', 'post'], '/school-info', [WebsiteSettingsController::class, 'updateSchoolInfo'])->name('school-info.update');
+        Route::get('/admissions', [WebsiteSettingsController::class, 'admissions'])->name('admissions');
+        Route::put('/admissions', [WebsiteSettingsController::class, 'updateAdmissions'])->name('admissions.update');
+        Route::get('/contact', [WebsiteSettingsController::class, 'contact'])->name('contact');
+        Route::put('/contact', [WebsiteSettingsController::class, 'updateContact'])->name('contact.update');
+        Route::get('/social', [WebsiteSettingsController::class, 'social'])->name('social');
+        Route::put('/social', [WebsiteSettingsController::class, 'updateSocial'])->name('social.update');
+        Route::get('/seo', [WebsiteSettingsController::class, 'seo'])->name('seo');
+        Route::match(['put', 'post'], '/seo', [WebsiteSettingsController::class, 'updateSeo'])->name('seo.update');
+        Route::get('/theme', [WebsiteSettingsController::class, 'theme'])->name('theme');
+        Route::match(['put', 'post'], '/theme', [WebsiteSettingsController::class, 'updateTheme'])->name('theme.update');
+
+        Route::resource('stages', WebsiteStageController::class)->except(['show', 'update']);
+        Route::match(['put', 'patch', 'post'], 'stages/{stage}', [WebsiteStageController::class, 'update'])->name('stages.update');
+        Route::resource('facilities', WebsiteFacilityController::class)->except(['show', 'update']);
+        Route::match(['put', 'patch', 'post'], 'facilities/{facility}', [WebsiteFacilityController::class, 'update'])->name('facilities.update');
+        Route::resource('events', WebsiteEventController::class)->except(['show', 'update']);
+        Route::match(['put', 'patch', 'post'], 'events/{event}', [WebsiteEventController::class, 'update'])->name('events.update');
+        Route::resource('posts', WebsitePostController::class)->except(['show', 'update']);
+        Route::match(['put', 'patch', 'post'], 'posts/{post}', [WebsitePostController::class, 'update'])->name('posts.update');
+        Route::resource('testimonials', WebsiteTestimonialController::class)->except(['show', 'update']);
+        Route::match(['put', 'patch', 'post'], 'testimonials/{testimonial}', [WebsiteTestimonialController::class, 'update'])->name('testimonials.update');
+        Route::resource('success-stories', WebsiteSuccessStoryController::class)->except(['show', 'update']);
+        Route::match(['put', 'patch', 'post'], 'success-stories/{success_story}', [WebsiteSuccessStoryController::class, 'update'])->name('success-stories.update');
+        Route::resource('careers', WebsiteCareerController::class)->except(['show', 'update']);
+        Route::match(['put', 'patch', 'post'], 'careers/{career}', [WebsiteCareerController::class, 'update'])->name('careers.update');
+        Route::match(['put', 'post'], '/careers/recruitment', [WebsiteCareerController::class, 'updateRecruitment'])->name('careers.recruitment');
+
+        Route::get('/media', [WebsiteMediaController::class, 'index'])->name('media.index');
+        Route::post('/media', [WebsiteMediaController::class, 'store'])->name('media.store');
+        Route::delete('/media/{medium}', [WebsiteMediaController::class, 'destroy'])->name('media.destroy');
+        Route::get('/media/picker', [WebsiteMediaController::class, 'picker'])->name('media.picker');
+    });
+
+    // Dova Knowledge Center
+    Route::prefix('dova-knowledge')->name('dova-knowledge.')->middleware('dova-knowledge')->group(function () {
+        Route::get('/', [DovaKnowledgeController::class, 'dashboard'])->name('dashboard');
+        Route::get('/sources', [DovaKnowledgeController::class, 'sources'])->name('sources.index');
+        Route::post('/sources/{source}/toggle', [DovaKnowledgeController::class, 'toggleSource'])->name('sources.toggle');
+        Route::post('/sources/{source}/reindex', [DovaKnowledgeController::class, 'reindexSource'])->name('sources.reindex');
+        Route::get('/sources/{source}/records', [DovaKnowledgeController::class, 'sourceRecords'])->name('sources.records');
+        Route::get('/sync', [DovaKnowledgeController::class, 'syncCenter'])->name('sync.index');
+        Route::post('/sync/{group}', [DovaKnowledgeController::class, 'runSync'])->name('sync.run');
+        Route::get('/explorer', [DovaKnowledgeController::class, 'explorer'])->name('explorer.index');
+        Route::get('/testing', [DovaKnowledgeController::class, 'testing'])->name('testing.index');
+        Route::post('/testing', [DovaKnowledgeController::class, 'runTest'])->name('testing.run');
+        Route::get('/unanswered', [DovaUnansweredController::class, 'index'])->name('unanswered.index');
+        Route::post('/unanswered/sync', [DovaUnansweredController::class, 'sync'])->name('unanswered.sync');
+        Route::get('/unanswered/{gap}', [DovaUnansweredController::class, 'show'])->name('unanswered.show');
+        Route::post('/unanswered/{gap}/draft', [DovaUnansweredController::class, 'saveDraft'])->name('unanswered.draft');
+        Route::post('/unanswered/{gap}/publish', [DovaUnansweredController::class, 'publish'])->name('unanswered.publish');
+        Route::post('/unanswered/{gap}/ignore', [DovaUnansweredController::class, 'ignore'])->name('unanswered.ignore');
+        Route::get('/governance', [DovaFaqGovernanceController::class, 'index'])->name('governance.index');
+        Route::get('/analytics', [DovaKnowledgeController::class, 'analytics'])->name('analytics.index');
+        Route::get('/ai-usage', [DovaAiController::class, 'index'])->name('ai-usage.index');
+
+        Route::prefix('faqs')->name('faqs.')->group(function () {
+            Route::get('/dashboard', [DovaFaqController::class, 'dashboard'])->name('dashboard');
+            Route::get('/', [DovaFaqController::class, 'index'])->name('index');
+            Route::get('/create', [DovaFaqController::class, 'create'])->name('create');
+            Route::post('/', [DovaFaqController::class, 'store'])->name('store');
+            Route::get('/{faq}/edit', [DovaFaqController::class, 'edit'])->name('edit');
+            Route::put('/{faq}', [DovaFaqController::class, 'update'])->name('update');
+            Route::delete('/{faq}', [DovaFaqController::class, 'destroy'])->name('destroy');
+            Route::post('/{faq}/review', [DovaFaqController::class, 'submitReview'])->name('review');
+            Route::post('/{faq}/publish', [DovaFaqController::class, 'publish'])->name('publish');
+            Route::post('/{faq}/archive', [DovaFaqController::class, 'archive'])->name('archive');
+            Route::post('/{faq}/complete-review', [DovaFaqController::class, 'completeReview'])->name('complete-review');
+            Route::post('/{faq}/deprecate', [DovaFaqController::class, 'deprecate'])->name('deprecate');
+        });
+
+        Route::prefix('gaps')->name('gaps.')->group(function () {
+            Route::get('/', [DovaKnowledgeGapController::class, 'index'])->name('index');
+            Route::post('/sync', [DovaKnowledgeGapController::class, 'sync'])->name('sync');
+            Route::post('/{gap}/dismiss', [DovaKnowledgeGapController::class, 'dismiss'])->name('dismiss');
+            Route::get('/{gap}/create-faq', [DovaKnowledgeGapController::class, 'createFaq'])->name('create-faq');
+        });
+    });
 });
 
 // Teacher Routes
@@ -614,8 +900,8 @@ Route::middleware([
 
     // Timetable
     Route::get('/timetables', [TeacherTimetableController::class, 'index'])->name('timetables.index');
+    Route::get('/timetables/grid', [TeacherTimetableController::class, 'grid'])->name('timetables.grid');
     Route::post('/timetables/assign-self', [TeacherTimetableController::class, 'assignSelf'])->name('timetables.assign-self');
-    Route::delete('/timetables/assignments/{id}', [TeacherTimetableController::class, 'removeSelfAssignment'])->name('timetables.assignments.remove');
 
     // Live Streams
     Route::get('/live-streams/{liveStream}/room', [TeacherLiveStreamController::class, 'room'])->name('live-streams.room');
@@ -641,4 +927,72 @@ Route::middleware([
     Route::patch('/live-streams/{liveStream}/exam/{session}/close', [\App\Http\Controllers\admin\LiveStreamExamController::class, 'close'])->name('live-streams.exam.close');
     Route::get('/live-streams/{liveStream}/exam/{session}/status', [\App\Http\Controllers\admin\LiveStreamExamController::class, 'status'])->name('live-streams.exam.status');
     Route::resource('live-streams', TeacherLiveStreamController::class);
+
+    Route::prefix('attendances')->name('attendances.')->group(function () {
+        Route::get('/', [TeacherAttendanceController::class, 'index'])->name('index');
+        Route::get('/class/{period}', [TeacherAttendanceController::class, 'class'])->name('class');
+        Route::post('/class/{period}/mark', [TeacherAttendanceController::class, 'mark'])->name('mark');
+    });
+
+    // Lessons (teacher)
+    Route::get('/lessons', [\App\Http\Controllers\teacher\LessonController::class, 'index'])->name('lessons.index');
+    Route::get('/lessons/create', [\App\Http\Controllers\teacher\LessonController::class, 'create'])->name('lessons.create');
+    Route::post('/lessons', [\App\Http\Controllers\teacher\LessonController::class, 'store'])->name('lessons.store');
+    Route::get('/lessons/{lesson}/edit', [\App\Http\Controllers\teacher\LessonController::class, 'edit'])->name('lessons.edit');
+    Route::get('/lessons/{lesson}/details', [\App\Http\Controllers\teacher\LessonController::class, 'editDetails'])->name('lessons.details');
+    Route::put('/lessons/{lesson}', [\App\Http\Controllers\teacher\LessonController::class, 'update'])->name('lessons.update');
+    Route::post('/lectures', [\App\Http\Controllers\teacher\LectureController::class, 'store'])->name('lectures.store');
+    Route::delete('/lectures/{lecture}', [\App\Http\Controllers\teacher\LectureController::class, 'destroy'])->name('lectures.destroy');
+    Route::post('/files/upload-to-bunny', [\App\Http\Controllers\teacher\LessonFileController::class, 'uploadToBunny'])->name('files.uploadToBunny');
+    Route::post('/files/save-youtube-link', [\App\Http\Controllers\teacher\LessonFileController::class, 'saveYoutubeLink'])->name('files.saveYoutubeLink');
+    Route::post('/files/save-external-link', [\App\Http\Controllers\teacher\LessonFileController::class, 'saveExternalLink'])->name('files.saveExternalLink');
+    Route::put('/files/{file}', [\App\Http\Controllers\teacher\LessonFileController::class, 'update'])->name('files.update');
+    Route::delete('/files/{file}', [\App\Http\Controllers\teacher\LessonFileController::class, 'destroy'])->name('files.destroy');
+    Route::get('/timetable/periods/{period}/create-lesson', [\App\Http\Controllers\teacher\LessonController::class, 'createFromPeriod'])->name('lessons.from-period');
+    Route::get('/lessons/{subjectId}/subject-categories', function ($subjectId) {
+        $controller = new \App\Http\Controllers\teacher\LessonController();
+        return response()->json($controller->getSubjectCategoriesPublic((int) $subjectId, request()->user()));
+    })->name('lessons.subject-categories');
+    Route::get('/lesson-strategies', [\App\Http\Controllers\teacher\LessonMessageTemplateController::class, 'index'])
+        ->name('lesson-strategies.index');
+    Route::post('/lesson-strategies', [\App\Http\Controllers\teacher\LessonMessageTemplateController::class, 'store'])
+        ->name('lesson-strategies.store');
+});
+
+// Guardian portal (parents)
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+    'guardian',
+])->prefix('guardian')->as('guardian.')->group(function () {
+    Route::get('/dashboard', [GuardianPortalController::class, 'dashboard'])->name('dashboard');
+    Route::get('/notifications', [GuardianPortalController::class, 'notificationSettings'])->name('notifications');
+
+    Route::get('/students/{student}', [GuardianPortalController::class, 'childOverview'])->name('students.overview');
+    Route::get('/students/{student}/attendance', [GuardianPortalController::class, 'childAttendance'])->name('students.attendance');
+    Route::get('/students/{student}/grades', [GuardianPortalController::class, 'childGrades'])->name('students.grades');
+    Route::get('/students/{student}/behavior', [GuardianPortalController::class, 'childBehavior'])->name('students.behavior');
+    Route::get('/students/{student}/schedule', [GuardianPortalController::class, 'childSchedule'])->name('students.schedule');
+    Route::get('/students/{student}/courses', [GuardianPortalController::class, 'childCourses'])->name('students.courses');
+    Route::get('/students/{student}/wallet', [GuardianPortalController::class, 'childWallet'])->name('students.wallet');
+
+    Route::get('/wallet', [GuardianPortalController::class, 'wallet'])->name('wallet');
+    Route::post('/wallet/transfer', [GuardianPortalController::class, 'walletTransfer'])->name('wallet.transfer');
+
+    Route::redirect('/attendance', '/guardian/dashboard')->name('attendance.index');
+    Route::get('/students/{student}/attendance-legacy', fn ($student) => redirect()->route('guardian.students.attendance', $student))->name('attendance.show');
+});
+
+// Department plan (Admin + Department Head)
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+    'department-plan',
+])->prefix('department-plan')->as('department-plan.')->group(function () {
+    Route::get('/', [DepartmentPlanController::class, 'index'])->name('index');
+    Route::post('/{plan}/items', [DepartmentPlanController::class, 'syncItems'])->name('items.sync');
+    Route::post('/{plan}/staffing', [DepartmentPlanController::class, 'syncStaffing'])->name('staffing.sync');
+    Route::post('/{plan}/activate', [DepartmentPlanController::class, 'activate'])->name('activate');
 });

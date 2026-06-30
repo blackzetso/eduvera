@@ -13,10 +13,23 @@ use Illuminate\Http\Request;
 class LiveStreamExamController extends Controller
 {
     /**
+     * Abort with 403 if the authenticated user is a teacher who does not own the stream.
+     * Uses teacher_email because live_streams has no teacher_id column.
+     */
+    private function assertTeacherOwns(LiveStream $stream): void
+    {
+        if (auth()->user()?->user_type === 'teacher') {
+            abort_if($stream->teacher_email !== auth()->user()->email, 403, 'هذا البث لا يخصك.');
+        }
+    }
+
+    /**
      * Teacher: launch all draft quizzes (without an exam session) as a timed exam.
      */
     public function launch(Request $request, LiveStream $liveStream): JsonResponse
     {
+        $this->assertTeacherOwns($liveStream);
+
         $request->validate(['time_limit' => 'required|integer|min:10|max:86400']);
 
         // Prevent launching if an exam is already active
@@ -64,6 +77,7 @@ class LiveStreamExamController extends Controller
      */
     public function close(LiveStream $liveStream, LiveStreamExamSession $session): JsonResponse
     {
+        $this->assertTeacherOwns($liveStream);
         abort_if($session->live_stream_id !== $liveStream->id, 403);
 
         $session->update(['status' => 'closed', 'closed_at' => now()]);
@@ -76,6 +90,7 @@ class LiveStreamExamController extends Controller
      */
     public function status(LiveStream $liveStream, LiveStreamExamSession $session): JsonResponse
     {
+        $this->assertTeacherOwns($liveStream);
         abort_if($session->live_stream_id !== $liveStream->id, 403);
 
         $session->refresh();

@@ -8,7 +8,19 @@ const props = defineProps({
   student:    Object,
   categories: { type: Array, default: () => [] },
   parents:    { type: Array, default: () => [] },
+  relationshipTypeOptions: { type: Array, default: () => [] },
 })
+
+function mapGuardianLink(guardian) {
+  return {
+    guardian_id: guardian.id,
+    relationship_type: guardian.pivot?.relationship_type || 'guardian',
+    is_primary: !!guardian.pivot?.is_primary,
+    is_emergency_contact: !!guardian.pivot?.is_emergency_contact,
+    is_pickup_authorized: guardian.pivot?.is_pickup_authorized !== false,
+    is_financial_responsible: !!guardian.pivot?.is_financial_responsible,
+  }
+}
 
 const selectedTopId = ref(null)
 const selectedMidId = ref(null)
@@ -56,22 +68,58 @@ function onSectionChange() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const form = useForm({
-  name:         props.student.name,
-  email:        props.student.email,
-  phone:        props.student.phone || '',
-  category_id:  props.student.category_id || '',
-  guardian_ids: (props.student.guardians || []).map(g => g.id),
+  name:               props.student.name,
+  first_name:         props.student.first_name || '',
+  father_name:        props.student.father_name || '',
+  grandfather_name:   props.student.grandfather_name || '',
+  national_id:        props.student.national_id || '',
+  date_of_birth:      props.student.date_of_birth || '',
+  gender:             props.student.gender || '',
+  enrollment_date:    props.student.enrollment_date || '',
+  email:              props.student.email,
+  phone:              props.student.phone || '',
+  category_id:        props.student.category_id || '',
+  guardian_links:     (props.student.guardians || []).map(mapGuardianLink),
 })
 
+function guardianLinkFor(id) {
+  return form.guardian_links.find(l => l.guardian_id === id)
+}
+
 function toggleParent(id) {
-  const idx = form.guardian_ids.indexOf(id)
-  if (idx === -1) form.guardian_ids.push(id)
-  else form.guardian_ids.splice(idx, 1)
+  const idx = form.guardian_links.findIndex(l => l.guardian_id === id)
+  if (idx === -1) {
+    form.guardian_links.push({
+      guardian_id: id,
+      relationship_type: 'guardian',
+      is_primary: form.guardian_links.length === 0,
+      is_emergency_contact: false,
+      is_pickup_authorized: true,
+      is_financial_responsible: false,
+    })
+  } else {
+    form.guardian_links.splice(idx, 1)
+  }
 }
 
 function isParentSelected(id) {
-  return form.guardian_ids.includes(id)
+  return form.guardian_links.some(l => l.guardian_id === id)
 }
+
+function setPrimaryGuardian(id) {
+  form.guardian_links.forEach((link) => {
+    link.is_primary = link.guardian_id === id
+  })
+}
+
+const selectedGuardianDetails = computed(() => {
+  return form.guardian_links
+    .map((link) => {
+      const parent = props.parents.find(p => p.id === link.guardian_id)
+      return parent ? { ...link, name: parent.name } : null
+    })
+    .filter(Boolean)
+})
 
 function initCategorySelectionsFromCurrent() {
   const currentId = Number(form.category_id)
@@ -123,11 +171,16 @@ function submit() {
   <AppLayout>
     <div class="page-content-wrapper border">
       <div class="card-body px-1 px-sm-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h4>تعديل بيانات الطالب</h4>
-          <Link :href="route('admin.students.index')" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> العودة
-          </Link>
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+          <h4 class="mb-0">تعديل بيانات الطالب</h4>
+          <div class="d-flex gap-2">
+            <Link :href="route('admin.students.show', student.id)" class="btn btn-outline-primary">
+              <i class="bi bi-person-badge"></i> ملف الطالب
+            </Link>
+            <Link :href="route('admin.students.index')" class="btn btn-secondary">
+              <i class="bi bi-arrow-left"></i> القائمة
+            </Link>
+          </div>
         </div>
 
         <div class="card">
@@ -175,6 +228,54 @@ function submit() {
                   </div>
                 </div>
 
+                <div class="col-md-6">
+                  <label class="form-label">رقم النظام</label>
+                  <input type="text" class="form-control" :value="student.id" disabled>
+                  <div class="form-text">يُستخدم في بحث الكافتيريا (مثل: {{ student.id }})</div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">كود الطالب</label>
+                  <input type="text" class="form-control" :value="student.student_code || '—'" disabled>
+                </div>
+
+                <div class="col-12">
+                  <hr class="my-1">
+                  <h6 class="text-muted mb-0">البيانات الشخصية التفصيلية</h6>
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label">الاسم الأول</label>
+                  <input type="text" class="form-control" v-model="form.first_name">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">اسم الأب</label>
+                  <input type="text" class="form-control" v-model="form.father_name">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">اسم الجد</label>
+                  <input type="text" class="form-control" v-model="form.grandfather_name">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">الرقم القومي</label>
+                  <input type="text" class="form-control" v-model="form.national_id">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">تاريخ الميلاد</label>
+                  <input type="date" class="form-control" v-model="form.date_of_birth">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">النوع</label>
+                  <select class="form-select" v-model="form.gender">
+                    <option value="">—</option>
+                    <option value="male">ذكر</option>
+                    <option value="female">أنثى</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">تاريخ القيد</label>
+                  <input type="date" class="form-control" v-model="form.enrollment_date">
+                </div>
                 <div v-if="student.user_type === 'student'" class="col-md-3">
                   <label class="form-label">الشعبة</label>
                   <select class="form-select" v-model="selectedTopId" @change="onTopChange">
@@ -215,8 +316,8 @@ function submit() {
                 </div>
 
                 <div class="col-md-12">
-                  <div class="alert alert-info">
-                    <strong>ملاحظة:</strong> لتغيير كلمة المرور، يرجى استخدام خيارات إدارة الحساب الأخرى.
+                  <div class="alert alert-info mb-0">
+                    <strong>ملاحظة:</strong> تغيير الحالة والترقية والانسحاب تتم من <Link :href="route('admin.students.show', student.id)">ملف الطالب</Link> — إجراءات سريعة.
                   </div>
                 </div>
               </div>
@@ -227,8 +328,8 @@ function submit() {
                   <div class="card-header bg-white border-bottom d-flex align-items-center gap-2 rounded-top-3">
                     <i class="bi bi-person-heart text-primary fs-5"></i>
                     <span class="fw-semibold">ربط بولي الأمر</span>
-                    <span v-if="form.guardian_ids.length > 0" class="badge bg-primary ms-auto">
-                      {{ form.guardian_ids.length }} مختار
+                    <span v-if="form.guardian_links.length > 0" class="badge bg-primary ms-auto">
+                      {{ form.guardian_links.length }} مختار
                     </span>
                   </div>
                   <div class="card-body">
@@ -268,6 +369,60 @@ function submit() {
                           <div class="text-muted small">{{ parent.email }}</div>
                         </div>
                         <span v-if="parent.national_id" class="badge bg-secondary bg-opacity-75 flex-shrink-0">{{ parent.national_id }}</span>
+                      </div>
+                    </div>
+
+                    <div v-if="selectedGuardianDetails.length" class="mt-4 border-top pt-3">
+                      <h6 class="mb-3">بيانات العلاقة لأولياء الأمور المختارين</h6>
+                      <div
+                        v-for="link in selectedGuardianDetails"
+                        :key="link.guardian_id"
+                        class="card border mb-2"
+                      >
+                        <div class="card-body py-3">
+                          <div class="fw-semibold mb-2">{{ link.name }}</div>
+                          <div class="row g-2">
+                            <div class="col-md-4">
+                              <label class="form-label small">نوع العلاقة</label>
+                              <select
+                                class="form-select form-select-sm"
+                                v-model="guardianLinkFor(link.guardian_id).relationship_type"
+                              >
+                                <option
+                                  v-for="type in relationshipTypeOptions"
+                                  :key="type.value"
+                                  :value="type.value"
+                                >
+                                  {{ type.label }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-md-8 d-flex flex-wrap gap-3 align-items-end">
+                              <label class="form-check small mb-0">
+                                <input
+                                  type="radio"
+                                  class="form-check-input"
+                                  name="primary_guardian"
+                                  :checked="link.is_primary"
+                                  @change="setPrimaryGuardian(link.guardian_id)"
+                                >
+                                ولي أمر أساسي
+                              </label>
+                              <label class="form-check small mb-0">
+                                <input type="checkbox" class="form-check-input" v-model="guardianLinkFor(link.guardian_id).is_emergency_contact">
+                                جهة طوارئ
+                              </label>
+                              <label class="form-check small mb-0">
+                                <input type="checkbox" class="form-check-input" v-model="guardianLinkFor(link.guardian_id).is_pickup_authorized">
+                                مخوّل بالاستلام
+                              </label>
+                              <label class="form-check small mb-0">
+                                <input type="checkbox" class="form-check-input" v-model="guardianLinkFor(link.guardian_id).is_financial_responsible">
+                                مسؤول مالي
+                              </label>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

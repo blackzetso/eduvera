@@ -49,9 +49,7 @@ function submit() {
             </div>
 
             <div class="row g-4">
-                <div class="col-xl-3">
-                    <Sidebar />
-                </div>
+                <Sidebar />
 
                 <div class="col-xl-9">
                     <div class="card shadow">

@@ -144,8 +144,11 @@
                                 </div>
                             </td>
                             <td>
-                                <Link :href="route('admin.forms.edit',form.id)" class="btn btn-success-soft btn-round me-1">
+                                <Link :href="route('admin.forms.edit',form.id)" class="btn btn-success-soft btn-round me-1" title="تحرير V2">
                                     <i class="bi bi-pencil-square"></i>
+                                </Link>
+                                <Link :href="route('admin.forms.submissions.index', form.id)" class="btn btn-warning-soft btn-round me-1" title="الإرسالات">
+                                    <i class="bi bi-inbox"></i>
                                 </Link>
                                 <button @click="confirmDelete(form.id)" class="btn btn-danger-soft btn-round me-1">
                                 <i class="bi bi-trash"></i>

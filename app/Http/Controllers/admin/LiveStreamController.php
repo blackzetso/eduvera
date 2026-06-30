@@ -759,15 +759,28 @@ class LiveStreamController extends Controller
 
         $liveStream->attendances()->delete();
 
+        $syncService = app(\App\Services\LiveStreamAttendanceSyncService::class);
+
         foreach ($attendees as $attendee) {
-            LiveStreamAttendance::create([
+            $studentId = null;
+            if (! empty($attendee['student_email'])) {
+                $studentId = \App\Models\User::query()
+                    ->where('user_type', 'student')
+                    ->where('email', $attendee['student_email'])
+                    ->value('id');
+            }
+
+            $record = LiveStreamAttendance::create([
                 'live_stream_id'   => $liveStream->id,
+                'student_id'       => $studentId,
                 'student_name'     => $attendee['student_name'],
                 'student_email'    => $attendee['student_email'],
                 'join_time'        => $attendee['join_time'],
                 'leave_time'       => $attendee['leave_time'],
                 'duration_seconds' => $attendee['duration_seconds'],
             ]);
+
+            $syncService->syncRecord($record);
         }
 
         return back()->with('success', 'تم مزامنة بيانات الحضور بنجاح. (' . count($attendees) . ' طالب)');

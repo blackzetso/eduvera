@@ -1,0 +1,1757 @@
+{
+  "exportedAt": "2026-06-04T21:24:02.695Z",
+  "schoolInfo": {
+    "name": "Nile Private Schools",
+    "tagline": "International School",
+    "founded": 1948,
+    "logo": {
+      "src": "/front/theme1/images/nile-private-schools-logo.png",
+      "alt": "Nile Private Schools"
+    },
+    "contact": {
+      "address": "123 Education Avenue, New Cairo",
+      "phone": "+20 1050987480",
+      "whatsapp": "+20 1050987480",
+      "email": "info@nileschools.com",
+      "careersEmail": "careers@meridianacademy.edu",
+      "hours": "Sun–Thu 7:30 AM – 3:30 PM",
+      "mapEmbedUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3454.0!2d31.2!3d30.0!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDAwJzAwLjAiTiAzMcKwMTInMDAuMCJF!5e0!3m2!1sen!2s!4v1"
+    },
+    "hero": {
+      "pill": "Admissions Open 2026–2027 — Apply Now!",
+      "headlineLine1": "Nile Private Language Schools",
+      "headlineAccent": "Where Excellence Meets Opportunity",
+      "headlineLine2": "With Nile Private Schools",
+      "subheadline": "Building future leaders through world-class education, innovative learning, and a nurturing environment that prepares students for success in top universities worldwide.",
+      "videoUrl": "/front/theme1/video/hero-video.mp4",
+      "watchStoryLabel": "WATCH OUR STORY",
+      "image": {
+        "assetKey": "landing.hero",
+        "src": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1600&q=85",
+        "alt": "Meridian Academy campus"
+      },
+      "trustLabel": "Trusted by 2,500+ Successful Families"
+    },
+    "topBar": {
+      "phone": "+20 1050987480",
+      "email": "info@nileschools.com"
+    },
+    "social": {
+      "facebook": "https://www.facebook.com/",
+      "instagram": "https://www.instagram.com/",
+      "youtube": "https://www.youtube.com/",
+      "linkedin": null
+    },
+    "about": {
+      "eyebrow": "About School Talent",
+      "title": "A Legacy of Excellence",
+      "intro": "Founded with a vision to blend international standards with local values, School Talent has grown into a trusted community of learners, educators, and families. Our campus inspires curiosity, character, and confidence in every child.",
+      "mission": "To deliver holistic, future-ready education in a safe and inspiring environment.",
+      "vision": "To be the region's leading international school for academic and personal achievement.",
+      "image": {
+        "assetKey": "landing.about",
+        "src": "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&q=80",
+        "alt": "School Talent campus aerial view"
+      }
+    },
+    "principal": {
+      "eyebrow": "Leadership",
+      "title": "A Message from the Principal",
+      "message": "Welcome to School Talent. We believe every child deserves an education that challenges the mind, nurtures the heart, and opens doors to the world. Our dedicated faculty and vibrant community work together to help students discover their talents and lead with purpose.",
+      "image": {
+        "assetKey": "landing.principal",
+        "src": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80",
+        "alt": "School Talent principal"
+      }
+    },
+    "finalCta": {
+      "headline": "Give Your Child a World-Class Education",
+      "subheadline": "Join a safe, accredited community where academic excellence, rich student life, and caring educators prepare your child for top universities."
+    }
+  },
+  "announcements": [
+    {
+      "id": "ann-1",
+      "text": "Admissions Open 2026–2027",
+      "href": "#admissions"
+    },
+    {
+      "id": "ann-2",
+      "text": "Book a Campus Tour",
+      "href": "#visit"
+    },
+    {
+      "id": "ann-3",
+      "text": "Scholarship Applications Open",
+      "href": "#admissions"
+    },
+    {
+      "id": "ann-4",
+      "text": "Upcoming Open Day — March 15",
+      "href": "#events"
+    }
+  ],
+  "navLinks": [
+    {
+      "href": "#stages",
+      "label": "Academics"
+    },
+    {
+      "href": "#admissions",
+      "label": "Admissions"
+    },
+    {
+      "href": "#student-life",
+      "label": "Campus Life"
+    },
+    {
+      "href": "#about",
+      "label": "Research"
+    },
+    {
+      "href": "#about",
+      "label": "About"
+    }
+  ],
+  "admissionsFunnelHref": "#visit",
+  "heroStats": [
+    {
+      "end": 1200,
+      "prefix": "",
+      "suffix": "+",
+      "label": "Students"
+    },
+    {
+      "end": 120,
+      "prefix": "",
+      "suffix": "+",
+      "label": "Teachers"
+    },
+    {
+      "end": 98,
+      "prefix": "",
+      "suffix": "%",
+      "label": "University Acceptance",
+      "decimals": 0
+    },
+    {
+      "end": 78,
+      "prefix": "",
+      "suffix": "",
+      "label": "Years of Excellence",
+      "decimals": 0
+    }
+  ],
+  "parentTrustStrip": [
+    {
+      "icon": "bi-shield-check",
+      "label": "Safe Campus"
+    },
+    {
+      "icon": "bi-person-check",
+      "label": "Qualified Teachers"
+    },
+    {
+      "icon": "bi-award",
+      "label": "Accredited Curriculum"
+    },
+    {
+      "icon": "bi-mortarboard",
+      "label": "University Preparation"
+    }
+  ],
+  "visitCampusReasons": [
+    {
+      "icon": "bi-person-badge",
+      "text": "Meet school leadership"
+    },
+    {
+      "icon": "bi-building",
+      "text": "Explore facilities"
+    },
+    {
+      "icon": "bi-easel",
+      "text": "Observe classrooms"
+    },
+    {
+      "icon": "bi-chat-dots",
+      "text": "Ask admissions questions"
+    }
+  ],
+  "whatsappQuickActions": [
+    {
+      "id": "admissions",
+      "label": "Ask Admissions",
+      "icon": "bi-chat-left-text",
+      "message": "Hello School Talent, I would like to ask about admissions."
+    },
+    {
+      "id": "visit",
+      "label": "Book a Visit",
+      "icon": "bi-calendar-check",
+      "message": "Hello, I would like to book a campus visit at School Talent."
+    },
+    {
+      "id": "inquiry",
+      "label": "Quick Inquiry",
+      "icon": "bi-lightning",
+      "message": "Hello School Talent, I have a quick question for the admissions team."
+    }
+  ],
+  "heroHighlights": [
+    {
+      "icon": "bi-calendar-check",
+      "text": "Flexible Admissions Schedule"
+    },
+    {
+      "icon": "bi-piggy-bank",
+      "text": "Scholarship & Fee Plans"
+    },
+    {
+      "icon": "bi-person-badge",
+      "text": "Expert International Faculty"
+    },
+    {
+      "icon": "bi-graph-up-arrow",
+      "text": "Personalized Learning Paths"
+    }
+  ],
+  "heroBadges": [
+    {
+      "id": "badge-academic",
+      "icon": "🏆",
+      "text": "Top Academic Results",
+      "class": "st-hero__float--1"
+    },
+    {
+      "id": "badge-university",
+      "icon": "🎓",
+      "text": "98% University Acceptance",
+      "class": "st-hero__float--2"
+    },
+    {
+      "id": "badge-accredited",
+      "icon": "✓",
+      "text": "Internationally Accredited",
+      "class": "st-hero__float--3"
+    }
+  ],
+  "ctaPresets": {
+    "apply": {
+      "label": "Explore Admissions",
+      "href": "#admissions",
+      "variant": "gold"
+    },
+    "visit": {
+      "label": "Visit",
+      "href": "#visit",
+      "variant": "outline"
+    },
+    "info": {
+      "label": "Request Information",
+      "href": "#visit",
+      "variant": "outline"
+    },
+    "learnMore": {
+      "label": "View Our Programs",
+      "href": "#stages",
+      "variant": "outline"
+    }
+  },
+  "sectionCtas": {
+    "hero": [
+      {
+        "id": "apply",
+        "label": "Explore Admissions",
+        "href": "#admissions",
+        "variant": "gold"
+      },
+      {
+        "id": "learnMore",
+        "label": "View Our Programs",
+        "href": "#stages",
+        "variant": "outline"
+      }
+    ],
+    "about": [
+      {
+        "label": "Book a Visit",
+        "href": "#visit",
+        "variant": "outline"
+      },
+      {
+        "label": "Request Information",
+        "href": "#visit",
+        "variant": "outline"
+      }
+    ],
+    "stages": [
+      {
+        "label": "Apply Now",
+        "href": "#visit",
+        "variant": "gold"
+      },
+      {
+        "label": "Book a Visit",
+        "href": "#visit",
+        "variant": "outline"
+      }
+    ],
+    "why": [
+      {
+        "label": "Request Information",
+        "href": "#visit",
+        "variant": "outline"
+      }
+    ],
+    "studentLife": [
+      {
+        "label": "Book a Visit",
+        "href": "#visit",
+        "variant": "outline"
+      }
+    ],
+    "facilities": [
+      {
+        "label": "Book a Visit",
+        "href": "#visit",
+        "variant": "outline"
+      }
+    ],
+    "academics": [
+      {
+        "label": "Apply Now",
+        "href": "#visit",
+        "variant": "gold"
+      }
+    ],
+    "events": [
+      {
+        "label": "Book a Visit",
+        "href": "#visit",
+        "variant": "outline"
+      }
+    ],
+    "achievements": [
+      {
+        "label": "Apply Now",
+        "href": "#visit",
+        "variant": "gold"
+      }
+    ],
+    "testimonials": [
+      {
+        "label": "Book a Visit",
+        "href": "#visit",
+        "variant": "outline"
+      },
+      {
+        "label": "Apply Now",
+        "href": "#visit",
+        "variant": "gold"
+      }
+    ],
+    "faq": [
+      {
+        "label": "Request Information",
+        "href": "#visit",
+        "variant": "outline"
+      },
+      {
+        "label": "Book a Visit",
+        "href": "#visit",
+        "variant": "outline"
+      }
+    ]
+  },
+  "visitFormConfig": {
+    "formId": "school-talent-visit",
+    "crmProvider": null,
+    "submitEndpoint": null,
+    "gradeOptions": [
+      "Nursery / Early Years",
+      "Grade 1",
+      "Grade 2",
+      "Grade 3",
+      "Grade 4",
+      "Grade 5",
+      "Grade 6",
+      "Grade 7",
+      "Grade 8",
+      "Grade 9",
+      "Grade 10",
+      "Grade 11",
+      "Grade 12",
+      "Not yet in school"
+    ],
+    "timeSlots": [
+      "9:00 AM",
+      "10:00 AM",
+      "11:00 AM",
+      "12:00 PM",
+      "1:00 PM",
+      "2:00 PM"
+    ]
+  },
+  "trustItems": [
+    "Certified Teachers",
+    "International Curriculum",
+    "Safe Campus",
+    "Modern Facilities",
+    "Digital Learning",
+    "University Preparation"
+  ],
+  "coreValues": [
+    {
+      "icon": "bi-star",
+      "title": "Excellence",
+      "text": "High standards in teaching and learning."
+    },
+    {
+      "icon": "bi-heart",
+      "title": "Integrity",
+      "text": "Honesty, respect, and responsibility."
+    },
+    {
+      "icon": "bi-lightbulb",
+      "title": "Innovation",
+      "text": "Future-ready skills and creativity."
+    },
+    {
+      "icon": "bi-globe2",
+      "title": "Global Mindset",
+      "text": "Cultural awareness and citizenship."
+    }
+  ],
+  "whyItems": [
+    {
+      "icon": "bi-mortarboard",
+      "title": "Academic Excellence",
+      "text": "Rigorous programs aligned with international standards."
+    },
+    {
+      "icon": "bi-person-hearts",
+      "title": "Character Development",
+      "text": "Values-based education and pastoral care."
+    },
+    {
+      "icon": "bi-cpu",
+      "title": "Innovation",
+      "text": "STEM, robotics, and digital fluency from early years."
+    },
+    {
+      "icon": "bi-flag",
+      "title": "Leadership",
+      "text": "Student councils, debates, and service leadership."
+    },
+    {
+      "icon": "bi-globe-americas",
+      "title": "Global Citizenship",
+      "text": "25+ nationalities, multilingual community."
+    },
+    {
+      "icon": "bi-graph-up-arrow",
+      "title": "Future Readiness",
+      "text": "University counseling and career pathways."
+    }
+  ],
+  "studentLife": [
+    {
+      "id": "sl-sports",
+      "_module": "gallery",
+      "icon": "bi-trophy",
+      "name": "Sports",
+      "image": {
+        "assetKey": "student-life.sports",
+        "src": "https://images.unsplash.com/photo-1461896836934-ffe607f8219a?w=600&q=80",
+        "alt": "Students in sports activities"
+      }
+    },
+    {
+      "id": "sl-arts",
+      "_module": "gallery",
+      "icon": "bi-palette",
+      "name": "Arts",
+      "image": {
+        "assetKey": "student-life.arts",
+        "src": "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=600&q=80",
+        "alt": "Arts programme"
+      }
+    },
+    {
+      "id": "sl-music",
+      "_module": "gallery",
+      "icon": "bi-music-note-beamed",
+      "name": "Music",
+      "image": {
+        "assetKey": "student-life.music",
+        "src": "https://images.unsplash.com/photo-1514320291840-7555e9c9625f?w=600&q=80",
+        "alt": "Music programme"
+      }
+    },
+    {
+      "id": "sl-robotics",
+      "_module": "gallery",
+      "icon": "bi-robot",
+      "name": "Robotics",
+      "image": {
+        "assetKey": "student-life.robotics",
+        "src": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&q=80",
+        "alt": "Robotics club"
+      }
+    },
+    {
+      "id": "sl-stem",
+      "_module": "gallery",
+      "icon": "bi-bezier2",
+      "name": "STEM",
+      "image": {
+        "assetKey": "student-life.stem",
+        "src": "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=600&q=80",
+        "alt": "STEM laboratory"
+      }
+    },
+    {
+      "id": "sl-leadership",
+      "_module": "gallery",
+      "icon": "bi-people",
+      "name": "Leadership",
+      "image": {
+        "assetKey": "student-life.leadership",
+        "src": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&q=80",
+        "alt": "Student leadership"
+      }
+    },
+    {
+      "id": "sl-community",
+      "_module": "gallery",
+      "icon": "bi-hand-thumbs-up",
+      "name": "Community Service",
+      "image": {
+        "assetKey": "student-life.community",
+        "src": "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=600&q=80",
+        "alt": "Community service"
+      }
+    }
+  ],
+  "facilities": [
+    {
+      "id": "fac-science",
+      "_module": "facilities",
+      "icon": "bi-flask",
+      "name": "Science Labs",
+      "description": "Fully equipped laboratories for physics, chemistry, and biology with safety-first protocols.",
+      "benefit": "Hands-on experiments that build scientific inquiry from primary years.",
+      "image": null
+    },
+    {
+      "id": "fac-library",
+      "_module": "facilities",
+      "icon": "bi-book",
+      "name": "Library",
+      "description": "A calm, inspiring space with 18,000+ volumes, digital catalogs, and quiet study zones.",
+      "benefit": "Daily reading programs and research support for every stage.",
+      "image": null
+    },
+    {
+      "id": "fac-sports",
+      "_module": "facilities",
+      "icon": "bi-dribbble",
+      "name": "Sports Complex",
+      "description": "Indoor courts, swimming pool, athletics track, and dedicated coaching staff.",
+      "benefit": "Competitive teams and wellbeing-focused physical education.",
+      "image": null
+    },
+    {
+      "id": "fac-innovation",
+      "_module": "facilities",
+      "icon": "bi-lightning",
+      "name": "Innovation Center",
+      "description": "Makerspace, robotics lab, and design studios with industry-grade tools.",
+      "benefit": "STEM competitions and project-based learning hub.",
+      "image": null
+    },
+    {
+      "id": "fac-classrooms",
+      "_module": "facilities",
+      "icon": "bi-display",
+      "name": "Smart Classrooms",
+      "description": "Interactive displays, high-speed connectivity, and blended learning platforms.",
+      "benefit": "Engaging lessons aligned with digital citizenship standards.",
+      "image": null
+    },
+    {
+      "id": "fac-auditorium",
+      "_module": "facilities",
+      "icon": "bi-mic",
+      "name": "Auditorium",
+      "description": "350-seat theater for assemblies, performances, and guest lectures.",
+      "benefit": "Confidence-building public speaking and arts showcases.",
+      "image": null
+    },
+    {
+      "id": "fac-transport",
+      "_module": "facilities",
+      "icon": "bi-bus-front",
+      "name": "Transportation",
+      "description": "GPS-tracked fleet covering major districts with trained attendants.",
+      "benefit": "Safe, reliable daily commutes for students and staff.",
+      "image": null
+    },
+    {
+      "id": "fac-clinic",
+      "_module": "facilities",
+      "icon": "bi-heart-pulse",
+      "name": "Medical Clinic",
+      "description": "Licensed nurses on campus with emergency protocols and health records.",
+      "benefit": "Immediate care and wellness monitoring during school hours.",
+      "image": null
+    }
+  ],
+  "academicPrograms": [
+    {
+      "title": "Curriculum",
+      "text": "Blended international framework with local accreditation pathways."
+    },
+    {
+      "title": "Learning Methodology",
+      "text": "Inquiry-based, collaborative, and differentiated instruction."
+    },
+    {
+      "title": "Assessment System",
+      "text": "Continuous formative assessment and standardized benchmarks."
+    },
+    {
+      "title": "University Preparation",
+      "text": "Dedicated counselors, SAT/IGCSE support, and alumni network."
+    },
+    {
+      "title": "Digital Learning",
+      "text": "1:1 devices, LMS integration, and safe digital citizenship."
+    }
+  ],
+  "events": [
+    {
+      "id": "evt-open-day",
+      "_module": "events",
+      "slug": "open-day-2026",
+      "date": "Mar 15, 2026",
+      "dateShort": "Mar 15",
+      "title": "Open Day 2026",
+      "type": "Open Day",
+      "isOpenDay": true,
+      "limitedSeatsLabel": "Limited Seats Available",
+      "audience": "Prospective families",
+      "location": "Main Campus — New Cairo",
+      "image": {
+        "assetKey": "events.open-day",
+        "src": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&q=80",
+        "alt": "Open Day event"
+      },
+      "cta": "Register Now",
+      "href": "#visit"
+    },
+    {
+      "id": "evt-science-fair",
+      "_module": "events",
+      "slug": "science-fair-2026",
+      "date": "Mar 22, 2026",
+      "dateShort": "Mar 22",
+      "title": "Science Fair",
+      "type": "Competition",
+      "audience": "Students & parents",
+      "location": "Innovation Center",
+      "image": {
+        "assetKey": "events.science-fair",
+        "src": "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=600&q=80",
+        "alt": "Science Fair"
+      },
+      "cta": "Learn More",
+      "href": "#events"
+    },
+    {
+      "id": "evt-london-trip",
+      "_module": "events",
+      "slug": "london-trip-2026",
+      "date": "Apr 5, 2026",
+      "dateShort": "Apr 5",
+      "title": "International Trip — London",
+      "type": "Trip",
+      "audience": "Secondary students",
+      "location": "Departing from campus",
+      "image": {
+        "assetKey": "events.trip",
+        "src": "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=600&q=80",
+        "alt": "International trip"
+      },
+      "cta": "View Details",
+      "href": "#events"
+    },
+    {
+      "id": "evt-parent-workshop",
+      "_module": "events",
+      "slug": "university-pathways-workshop",
+      "date": "Apr 18, 2026",
+      "dateShort": "Apr 18",
+      "title": "Parent Workshop: University Pathways",
+      "type": "Workshop",
+      "audience": "Parents of Grades 10–12",
+      "location": "Auditorium",
+      "image": {
+        "assetKey": "events.workshop",
+        "src": "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&q=80",
+        "alt": "Parent workshop"
+      },
+      "cta": "Reserve Seat",
+      "href": "#visit"
+    }
+  ],
+  "newsItems": [
+    {
+      "id": "news-robotics",
+      "_module": "news",
+      "slug": "robotics-champions-2026",
+      "category": "Achievement",
+      "title": "National Robotics Champions 2026",
+      "publishedAt": "Feb 28, 2026",
+      "image": {
+        "assetKey": "news.robotics",
+        "src": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&q=80",
+        "alt": "Robotics champions"
+      },
+      "excerpt": "Our secondary robotics team took first place at the national finals."
+    },
+    {
+      "id": "news-award",
+      "_module": "news",
+      "slug": "best-international-school",
+      "category": "Award",
+      "title": "Best International School — Regional",
+      "publishedAt": "Feb 10, 2026",
+      "image": {
+        "assetKey": "news.award",
+        "src": "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600&q=80",
+        "alt": "School award"
+      },
+      "excerpt": "Recognized for academic outcomes and student wellbeing programmes."
+    },
+    {
+      "id": "news-university",
+      "_module": "news",
+      "slug": "uk-university-acceptances",
+      "category": "Success",
+      "title": "12 Students Accepted to Top UK Universities",
+      "publishedAt": "Jan 20, 2026",
+      "image": {
+        "assetKey": "news.university",
+        "src": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&q=80",
+        "alt": "University acceptances"
+      },
+      "excerpt": "Class of 2025 achieves outstanding placement results."
+    }
+  ],
+  "blogPosts": [
+    {
+      "id": "blog-stage-guide",
+      "_module": "blog",
+      "slug": "choose-school-stage",
+      "title": "How to Choose the Right School Stage",
+      "category": "Parent Guides",
+      "date": "Mar 1, 2026",
+      "publishedAt": "Mar 1, 2026",
+      "image": {
+        "assetKey": "blog.stage-guide",
+        "src": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=700&q=80",
+        "alt": "Choosing school stage"
+      },
+      "excerpt": "A practical guide for families navigating Early Years through Secondary placement."
+    },
+    {
+      "id": "blog-study-habits",
+      "_module": "blog",
+      "slug": "study-habits-primary",
+      "title": "Building Study Habits in Primary Years",
+      "category": "Learning Tips",
+      "date": "Feb 18, 2026",
+      "publishedAt": "Feb 18, 2026",
+      "image": {
+        "assetKey": "blog.study-habits",
+        "src": "https://images.unsplash.com/photo-1580582932707-52ad340fd31f?w=700&q=80",
+        "alt": "Primary study habits"
+      },
+      "excerpt": "Routines that help young learners build confidence and independence at home."
+    },
+    {
+      "id": "blog-stem",
+      "_module": "blog",
+      "slug": "stem-at-school-talent",
+      "title": "STEM at School Talent",
+      "category": "School Updates",
+      "date": "Feb 5, 2026",
+      "publishedAt": "Feb 5, 2026",
+      "image": {
+        "assetKey": "blog.stem",
+        "src": "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=700&q=80",
+        "alt": "STEM learning"
+      },
+      "excerpt": "Robotics, coding, and inquiry labs that prepare students for future careers."
+    },
+    {
+      "id": "blog-wellbeing",
+      "_module": "blog",
+      "slug": "student-wellbeing",
+      "title": "Wellbeing at the Heart of Learning",
+      "category": "Parent Guides",
+      "date": "Jan 28, 2026",
+      "publishedAt": "Jan 28, 2026",
+      "image": {
+        "assetKey": "blog.wellbeing",
+        "src": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=700&q=80",
+        "alt": "Student wellbeing"
+      },
+      "excerpt": "How advisory programmes and counselors support every learner."
+    },
+    {
+      "id": "blog-admissions",
+      "_module": "blog",
+      "slug": "admissions-checklist",
+      "title": "Your Admissions Checklist for 2026–27",
+      "category": "Admissions",
+      "date": "Jan 12, 2026",
+      "publishedAt": "Jan 12, 2026",
+      "image": {
+        "assetKey": "blog.admissions",
+        "src": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=700&q=80",
+        "alt": "Admissions guide"
+      },
+      "excerpt": "Documents, timelines, and campus visit tips for a smooth application."
+    }
+  ],
+  "galleryCategories": [
+    "Campus Life",
+    "Students",
+    "Events",
+    "Activities",
+    "Facilities"
+  ],
+  "galleryItems": [
+    {
+      "id": "gal-1",
+      "category": "Campus Life",
+      "assetKey": "gallery.1",
+      "src": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=500&q=80",
+      "alt": "Campus courtyard"
+    },
+    {
+      "id": "gal-2",
+      "category": "Students",
+      "assetKey": "gallery.2",
+      "src": "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=500&q=80",
+      "alt": "Students on campus"
+    },
+    {
+      "id": "gal-3",
+      "category": "Activities",
+      "assetKey": "gallery.3",
+      "src": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500&q=80",
+      "alt": "Classroom activity"
+    },
+    {
+      "id": "gal-4",
+      "category": "Facilities",
+      "assetKey": "gallery.4",
+      "src": "https://images.unsplash.com/photo-1580582932707-52ad340fd31f?w=500&q=80",
+      "alt": "School building"
+    },
+    {
+      "id": "gal-5",
+      "category": "Events",
+      "assetKey": "gallery.5",
+      "src": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=500&q=80",
+      "alt": "School event"
+    },
+    {
+      "id": "gal-6",
+      "category": "Campus Life",
+      "assetKey": "gallery.6",
+      "src": "https://images.unsplash.com/photo-1562774053-701939374585?w=500&q=80",
+      "alt": "Campus facilities"
+    },
+    {
+      "id": "gal-7",
+      "category": "Students",
+      "assetKey": "gallery.7",
+      "src": "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=500&q=80",
+      "alt": "Graduation celebration"
+    },
+    {
+      "id": "gal-8",
+      "category": "Activities",
+      "assetKey": "gallery.8",
+      "src": "https://images.unsplash.com/photo-1571260899304-425eee4c8efc?w=500&q=80",
+      "alt": "Group learning"
+    },
+    {
+      "id": "gal-9",
+      "category": "Events",
+      "assetKey": "gallery.9",
+      "src": "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=500&q=80",
+      "alt": "International programme"
+    }
+  ],
+  "achievements": [
+    {
+      "id": "ach-acceptance",
+      "_module": "achievements",
+      "value": "98%",
+      "label": "University Acceptance"
+    },
+    {
+      "id": "ach-competitions",
+      "_module": "achievements",
+      "value": "45+",
+      "label": "Competition Winners"
+    },
+    {
+      "id": "ach-olympiad",
+      "_module": "achievements",
+      "value": "12",
+      "label": "Olympiad Medals"
+    },
+    {
+      "id": "ach-sports",
+      "_module": "achievements",
+      "value": "28",
+      "label": "Sports Titles"
+    },
+    {
+      "id": "ach-awards",
+      "_module": "achievements",
+      "value": "120+",
+      "label": "Student Awards"
+    }
+  ],
+  "testimonials": [
+    {
+      "id": "test-parent-1",
+      "_module": "testimonials",
+      "role": "Parent",
+      "roleType": "parent",
+      "name": "Sarah M.",
+      "quote": "School Talent gave our daughter confidence, curiosity, and a clear path to university.",
+      "photo": {
+        "assetKey": "testimonials.parent",
+        "src": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80",
+        "alt": "Parent testimonial portrait"
+      }
+    },
+    {
+      "id": "test-student-1",
+      "_module": "testimonials",
+      "role": "Student",
+      "roleType": "student",
+      "name": "Omar K., Grade 11",
+      "quote": "The teachers push us to think critically while supporting us every step.",
+      "photo": {
+        "assetKey": "testimonials.student",
+        "src": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80",
+        "alt": "Student testimonial portrait"
+      }
+    },
+    {
+      "id": "test-alumni-1",
+      "_module": "testimonials",
+      "role": "Alumni",
+      "roleType": "alumni",
+      "name": "Layla H.",
+      "quote": "I still use the study habits and leadership skills I learned here at university.",
+      "photo": {
+        "assetKey": "testimonials.alumni",
+        "src": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80",
+        "alt": "Alumni testimonial portrait"
+      }
+    },
+    {
+      "id": "test-teacher-1",
+      "_module": "testimonials",
+      "role": "Teacher",
+      "roleType": "teacher",
+      "name": "Mr. James R.",
+      "quote": "A professional community where innovation and student wellbeing come first.",
+      "photo": {
+        "assetKey": "testimonials.teacher",
+        "src": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80",
+        "alt": "Teacher testimonial portrait"
+      }
+    }
+  ],
+  "accreditations": [
+    {
+      "id": "acc-cambridge",
+      "_module": "accreditations",
+      "name": "Cambridge Assessment",
+      "abbr": "CA",
+      "description": "International curriculum and examination standards.",
+      "benefit": "Globally recognized qualifications for our graduates.",
+      "logo": {
+        "assetKey": "accreditations.cambridge",
+        "src": null,
+        "alt": "Cambridge Assessment logo"
+      },
+      "verifyUrl": "https://www.cambridgeinternational.org/"
+    },
+    {
+      "id": "acc-pearson",
+      "_module": "accreditations",
+      "name": "Pearson Edexcel",
+      "abbr": "PE",
+      "description": "Accredited delivery partner for IGCSE pathways.",
+      "benefit": "Rigorous assessment aligned with UK benchmarks.",
+      "logo": {
+        "assetKey": "accreditations.pearson",
+        "src": null,
+        "alt": "Pearson Edexcel logo"
+      },
+      "verifyUrl": "https://qualifications.pearson.com/"
+    },
+    {
+      "id": "acc-microsoft",
+      "_module": "accreditations",
+      "name": "Microsoft Education",
+      "abbr": "MS",
+      "description": "Official school technology and productivity partner.",
+      "benefit": "Secure cloud tools and digital skills certification.",
+      "logo": {
+        "assetKey": "accreditations.microsoft",
+        "src": null,
+        "alt": "Microsoft Education logo"
+      },
+      "verifyUrl": "https://www.microsoft.com/en-us/education"
+    },
+    {
+      "id": "acc-british-council",
+      "_module": "accreditations",
+      "name": "British Council",
+      "abbr": "BC",
+      "description": "Language and cultural programmes partnership.",
+      "benefit": "Enhanced English proficiency and global exposure.",
+      "logo": {
+        "assetKey": "accreditations.british-council",
+        "src": null,
+        "alt": "British Council logo"
+      },
+      "verifyUrl": "https://www.britishcouncil.org.eg/"
+    },
+    {
+      "id": "acc-ib",
+      "_module": "accreditations",
+      "name": "IB Pathway",
+      "abbr": "IB",
+      "description": "Preparatory framework for international baccalaureate readiness.",
+      "benefit": "Holistic learner profile development.",
+      "logo": {
+        "assetKey": "accreditations.ib",
+        "src": null,
+        "alt": "IB Pathway logo"
+      },
+      "verifyUrl": "https://www.ibo.org/"
+    },
+    {
+      "id": "acc-moe",
+      "_module": "accreditations",
+      "name": "Ministry of Education",
+      "abbr": "MOE",
+      "description": "Fully licensed and accredited national school status.",
+      "benefit": "Local equivalency and regulatory compliance.",
+      "logo": {
+        "assetKey": "accreditations.moe",
+        "src": null,
+        "alt": "Ministry of Education logo"
+      },
+      "verifyUrl": "#"
+    }
+  ],
+  "admissionSteps": [
+    {
+      "step": 1,
+      "title": "Inquiry",
+      "text": "Submit interest form or book a campus tour."
+    },
+    {
+      "step": 2,
+      "title": "Application",
+      "text": "Complete online application with documents."
+    },
+    {
+      "step": 3,
+      "title": "Assessment",
+      "text": "Age-appropriate evaluation and records review."
+    },
+    {
+      "step": 4,
+      "title": "Interview",
+      "text": "Family meeting with admissions team."
+    },
+    {
+      "step": 5,
+      "title": "Enrollment",
+      "text": "Offer, fees, and welcome onboarding."
+    }
+  ],
+  "stageShowcaseLabels": {
+    "early-years": "Kindergarten",
+    "primary": "Primary",
+    "preparatory": "Preparatory",
+    "secondary": "Secondary"
+  },
+  "teacherRecruitment": {
+    "eyebrow": "Careers",
+    "title": "Shape the Future as an Educator",
+    "intro": "Join a collaborative faculty community where your expertise is valued, your growth is invested in, and every lesson makes a lasting difference.",
+    "image": {
+      "assetKey": "landing.careers",
+      "src": "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80",
+      "alt": "School Talent faculty collaboration"
+    },
+    "benefits": [
+      "Competitive salary packages & relocation support",
+      "International faculty network & mentorship",
+      "Supportive leadership and wellbeing programmes",
+      "Purpose-driven school culture since 1998"
+    ],
+    "highlights": [
+      {
+        "icon": "bi-mortarboard",
+        "title": "Professional Development",
+        "text": "Annual training, Cambridge workshops, and leadership pathways."
+      },
+      {
+        "icon": "bi-pc-display",
+        "title": "Modern Learning Environment",
+        "text": "Smart classrooms, LMS tools, and innovation labs."
+      },
+      {
+        "icon": "bi-graph-up-arrow",
+        "title": "Career Growth",
+        "text": "Department lead roles, curriculum design, and global exchanges."
+      }
+    ],
+    "vacancies": [
+      "Primary English Teacher",
+      "Secondary Physics",
+      "School Counselor",
+      "Early Years Specialist"
+    ],
+    "applyLabel": "Apply as Teacher",
+    "positionsLabel": "View Open Positions"
+  },
+  "studentSuccessStories": [
+    {
+      "id": "success-scholarship",
+      "category": "Scholarships",
+      "icon": "bi-award",
+      "title": "Merit Scholarships Awarded",
+      "text": "42 students received partial and full merit scholarships for academic excellence and leadership.",
+      "stat": "42",
+      "statLabel": "Scholarships",
+      "image": {
+        "assetKey": "success.scholarship",
+        "src": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80",
+        "alt": "Scholarship celebration"
+      }
+    },
+    {
+      "id": "success-competition",
+      "category": "Competitions",
+      "icon": "bi-trophy",
+      "title": "National Robotics Champions",
+      "text": "Our secondary team won first place at the national robotics finals — third year in a row.",
+      "stat": "1st",
+      "statLabel": "Place",
+      "image": {
+        "assetKey": "success.competition",
+        "src": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80",
+        "alt": "Competition winners"
+      }
+    },
+    {
+      "id": "success-university",
+      "category": "University Admissions",
+      "icon": "bi-mortarboard",
+      "title": "Top UK & US Offers",
+      "text": "Class of 2025 secured offers from Russell Group universities and leading US colleges.",
+      "stat": "98%",
+      "statLabel": "Acceptance",
+      "image": {
+        "assetKey": "success.university",
+        "src": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80",
+        "alt": "University admission"
+      }
+    },
+    {
+      "id": "success-achievement",
+      "category": "Student Achievements",
+      "icon": "bi-stars",
+      "title": "Olympiad & Arts Excellence",
+      "text": "12 olympiad medals, regional debate titles, and international arts festival selections.",
+      "stat": "120+",
+      "statLabel": "Awards",
+      "image": {
+        "assetKey": "success.achievement",
+        "src": "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=800&q=80",
+        "alt": "Student achievement"
+      }
+    }
+  ],
+  "faqs": [
+    {
+      "q": "When do admissions open?",
+      "a": "Admissions for 2026–2027 are open year-round with priority deadlines in March and June.",
+      "cat": "Admissions"
+    },
+    {
+      "q": "What are the school fees?",
+      "a": "Fees vary by stage. Contact admissions for a detailed fee structure and payment plans.",
+      "cat": "Fees"
+    },
+    {
+      "q": "Is transportation available?",
+      "a": "Yes — door-to-door bus service across major districts with GPS-tracked buses.",
+      "cat": "Transportation"
+    },
+    {
+      "q": "Which curriculum do you follow?",
+      "a": "International blended curriculum with pathways for IGCSE and national equivalency.",
+      "cat": "Curriculum"
+    },
+    {
+      "q": "What are school hours?",
+      "a": "7:30 AM – 2:30 PM (Early Years finish earlier). After-school activities until 4:00 PM.",
+      "cat": "School Hours"
+    },
+    {
+      "q": "What extracurricular activities are offered?",
+      "a": "Sports, arts, music, robotics, debate, MUN, and community service programs.",
+      "cat": "Activities"
+    }
+  ],
+  "stages": [
+    {
+      "id": "early-years",
+      "_module": "admissions",
+      "slug": "early-years",
+      "title": "Early Years",
+      "subtitle": "Ages 3–5",
+      "ageRange": "Ages 3–5",
+      "tagline": "Play-based discovery in a nurturing environment",
+      "studentCount": 180,
+      "classSize": 18,
+      "keySkills": [
+        "Communication",
+        "Social skills",
+        "Early literacy"
+      ],
+      "tone": 1,
+      "image": {
+        "assetKey": "stages.early-years",
+        "src": "https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=800&q=80",
+        "alt": "Early Years classroom"
+      },
+      "overview": "Our Early Years program builds curiosity, language, and social skills through structured play, sensory learning, and caring classroom communities.",
+      "curriculum": [
+        "Literacy & phonics",
+        "Numeracy foundations",
+        "Creative arts",
+        "Physical development",
+        "Arabic & English immersion"
+      ],
+      "activities": [
+        "Story circles",
+        "Outdoor play",
+        "Music & movement",
+        "Swimming introduction",
+        "Celebration days"
+      ],
+      "teachers": "Certified early childhood specialists with international training and low student–teacher ratios.",
+      "schedule": [
+        {
+          "time": "7:45 AM",
+          "activity": "Arrival & free play"
+        },
+        {
+          "time": "8:30 AM",
+          "activity": "Circle time & phonics"
+        },
+        {
+          "time": "10:00 AM",
+          "activity": "Snack & outdoor learning"
+        },
+        {
+          "time": "11:00 AM",
+          "activity": "Creative arts / movement"
+        },
+        {
+          "time": "12:30 PM",
+          "activity": "Dismissal"
+        }
+      ],
+      "learningOutcomes": [
+        "Develop confidence in bilingual communication",
+        "Build fine and gross motor skills through play",
+        "Form positive relationships with peers and adults"
+      ],
+      "parentFaq": [
+        {
+          "q": "What is the typical class size?",
+          "a": "Classes average 18 students with a lead teacher and teaching assistant."
+        },
+        {
+          "q": "Is the program full-day?",
+          "a": "Early Years runs 7:45 AM – 12:30 PM with optional extended care."
+        },
+        {
+          "q": "How do you support toilet training?",
+          "a": "Our team partners with families using consistent, gentle routines."
+        }
+      ],
+      "gallery": [
+        "https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=800&q=80",
+        "https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=800&q=80",
+        "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=600&q=80"
+      ],
+      "admission": [
+        "Birth certificate",
+        "Immunization records",
+        "Developmental readiness visit",
+        "Parent interview"
+      ]
+    },
+    {
+      "id": "primary",
+      "_module": "admissions",
+      "slug": "primary",
+      "title": "Primary School",
+      "subtitle": "Grades 1–6",
+      "ageRange": "Grades 1–6",
+      "tagline": "Strong foundations for lifelong learning",
+      "studentCount": 600,
+      "classSize": 22,
+      "keySkills": [
+        "Literacy",
+        "Numeracy",
+        "Creativity"
+      ],
+      "tone": 2,
+      "image": {
+        "assetKey": "stages.primary",
+        "src": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&q=80",
+        "alt": "Primary school learning"
+      },
+      "overview": "Primary students develop core academic skills, digital literacy, and character through project-based learning and personalized support.",
+      "curriculum": [
+        "English & Arabic",
+        "Mathematics",
+        "Science",
+        "Social studies",
+        "ICT & coding basics",
+        "Islamic studies / ethics"
+      ],
+      "activities": [
+        "Sports teams",
+        "Art club",
+        "Reading challenges",
+        "Science fair",
+        "Student council junior"
+      ],
+      "teachers": "Subject specialists and homeroom teachers trained in differentiated instruction.",
+      "schedule": [
+        {
+          "time": "7:30 AM",
+          "activity": "Homeroom & morning routines"
+        },
+        {
+          "time": "8:00 AM",
+          "activity": "Core subjects block"
+        },
+        {
+          "time": "10:30 AM",
+          "activity": "Break & specialist lesson"
+        },
+        {
+          "time": "12:00 PM",
+          "activity": "Lunch & activities"
+        },
+        {
+          "time": "2:30 PM",
+          "activity": "Dismissal (clubs until 4:00 PM)"
+        }
+      ],
+      "learningOutcomes": [
+        "Master foundational literacy and numeracy standards",
+        "Apply critical thinking in collaborative projects",
+        "Demonstrate responsible digital citizenship"
+      ],
+      "parentFaq": [
+        {
+          "q": "How are students grouped?",
+          "a": "By grade with flexible grouping for literacy and math acceleration."
+        },
+        {
+          "q": "Is homework assigned daily?",
+          "a": "Age-appropriate tasks focus on reading and practice, not overload."
+        },
+        {
+          "q": "Can parents track progress?",
+          "a": "Yes — via the parent portal with reports and teacher messages."
+        }
+      ],
+      "gallery": [
+        "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&q=80",
+        "https://images.unsplash.com/photo-1580582932707-52ad340fd31f?w=500&q=80",
+        "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&q=80"
+      ],
+      "admission": [
+        "Previous school reports",
+        "Entrance assessment",
+        "Interview",
+        "Placement review"
+      ]
+    },
+    {
+      "id": "preparatory",
+      "_module": "admissions",
+      "slug": "preparatory",
+      "title": "Preparatory School",
+      "subtitle": "Grades 7–9",
+      "ageRange": "Grades 7–9",
+      "tagline": "Transition years with depth and independence",
+      "studentCount": 320,
+      "classSize": 24,
+      "keySkills": [
+        "Critical thinking",
+        "Research",
+        "Collaboration"
+      ],
+      "tone": 3,
+      "image": {
+        "assetKey": "stages.preparatory",
+        "src": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80",
+        "alt": "Preparatory students"
+      },
+      "overview": "Preparatory students strengthen study skills, explore electives, and prepare for secondary pathways with mentoring and advisory programs.",
+      "curriculum": [
+        "Advanced English & Arabic",
+        "Algebra & geometry",
+        "Integrated science",
+        "History & geography",
+        "Design & technology",
+        "World languages"
+      ],
+      "activities": [
+        "Robotics club",
+        "Model UN prep",
+        "Drama productions",
+        "Inter-school sports",
+        "Service projects"
+      ],
+      "teachers": "Department leads with experience in adolescent learning and exam preparation.",
+      "schedule": [
+        {
+          "time": "7:30 AM",
+          "activity": "Advisory & planner check-in"
+        },
+        {
+          "time": "8:00 AM",
+          "activity": "Rotating subject blocks"
+        },
+        {
+          "time": "11:00 AM",
+          "activity": "Lab / design sessions"
+        },
+        {
+          "time": "1:00 PM",
+          "activity": "Electives & clubs"
+        },
+        {
+          "time": "2:30 PM",
+          "activity": "Dismissal"
+        }
+      ],
+      "learningOutcomes": [
+        "Strengthen independent study and time management",
+        "Engage in inquiry-led research projects",
+        "Lead service initiatives within the school community"
+      ],
+      "parentFaq": [
+        {
+          "q": "When do students choose electives?",
+          "a": "Elective pathways begin in Grade 8 with counselor guidance."
+        },
+        {
+          "q": "How is wellbeing supported?",
+          "a": "Weekly advisory sessions and access to the school counselor."
+        },
+        {
+          "q": "Are devices required?",
+          "a": "School-issued devices are provided; personal devices follow BYOD policy in Grade 9."
+        }
+      ],
+      "gallery": [
+        "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80",
+        "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&q=80",
+        "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=600&q=80"
+      ],
+      "admission": [
+        "Report cards (2 years)",
+        "Placement tests",
+        "Student interview",
+        "Counselor recommendation"
+      ]
+    },
+    {
+      "id": "secondary",
+      "_module": "admissions",
+      "slug": "secondary",
+      "title": "Secondary School",
+      "subtitle": "Grades 10–12",
+      "ageRange": "Grades 10–12",
+      "tagline": "University-ready graduates and global leaders",
+      "studentCount": 280,
+      "classSize": 20,
+      "keySkills": [
+        "Leadership",
+        "Research",
+        "University readiness"
+      ],
+      "tone": 4,
+      "image": {
+        "assetKey": "stages.secondary",
+        "src": "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&q=80",
+        "alt": "Secondary school graduates"
+      },
+      "overview": "Secondary students follow rigorous academic tracks, leadership programs, and university counseling for top domestic and international placements.",
+      "curriculum": [
+        "IGCSE / national pathways",
+        "Advanced sciences",
+        "Economics & business",
+        "Literature",
+        "Research & extended essay",
+        "College prep seminars"
+      ],
+      "activities": [
+        "Debate & MUN",
+        "Internships",
+        "International trips",
+        "Varsity athletics",
+        "Capstone projects"
+      ],
+      "teachers": "Master teachers and university counselors with proven placement outcomes.",
+      "schedule": [
+        {
+          "time": "7:30 AM",
+          "activity": "University prep seminar (Gr. 11–12)"
+        },
+        {
+          "time": "8:15 AM",
+          "activity": "A-Level / IGCSE subject blocks"
+        },
+        {
+          "time": "12:00 PM",
+          "activity": "Independent study & labs"
+        },
+        {
+          "time": "2:00 PM",
+          "activity": "Counseling & extracurriculars"
+        },
+        {
+          "time": "2:30 PM",
+          "activity": "Dismissal"
+        }
+      ],
+      "learningOutcomes": [
+        "Achieve competitive exam results and portfolio quality",
+        "Complete capstone research with faculty mentorship",
+        "Secure university offers with personalized counseling"
+      ],
+      "parentFaq": [
+        {
+          "q": "When does university counseling start?",
+          "a": "Structured counseling begins in Grade 10 with intensified support in Grade 12."
+        },
+        {
+          "q": "Which exam boards are offered?",
+          "a": "Cambridge IGCSE and national equivalency pathways are available."
+        },
+        {
+          "q": "Are internships supported?",
+          "a": "Yes — Grade 11 students may join approved internship placements."
+        }
+      ],
+      "gallery": [
+        "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&q=80",
+        "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=500&q=80",
+        "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&q=80"
+      ],
+      "admission": [
+        "Transcripts",
+        "IGCSE/placement exams where applicable",
+        "Personal statement",
+        "Principal recommendation"
+      ]
+    }
+  ],
+  "landingSections": [
+    {
+      "key": "hero",
+      "label": "Hero",
+      "enabled": true,
+      "sort_order": 1
+    },
+    {
+      "key": "hero_stats",
+      "label": "Hero Statistics",
+      "enabled": true,
+      "sort_order": 2
+    },
+    {
+      "key": "trust",
+      "label": "Trust Strip",
+      "enabled": true,
+      "sort_order": 3
+    },
+    {
+      "key": "about",
+      "label": "About",
+      "enabled": true,
+      "sort_order": 4
+    },
+    {
+      "key": "stages",
+      "label": "Stages",
+      "enabled": true,
+      "sort_order": 5
+    },
+    {
+      "key": "why",
+      "label": "Why School Talent",
+      "enabled": true,
+      "sort_order": 6
+    },
+    {
+      "key": "student_life",
+      "label": "Student Life",
+      "enabled": true,
+      "sort_order": 7
+    },
+    {
+      "key": "facilities",
+      "label": "Facilities",
+      "enabled": true,
+      "sort_order": 8
+    },
+    {
+      "key": "academics",
+      "label": "Academics",
+      "enabled": true,
+      "sort_order": 9
+    },
+    {
+      "key": "events",
+      "label": "Events",
+      "enabled": true,
+      "sort_order": 10
+    },
+    {
+      "key": "news",
+      "label": "News & Blog",
+      "enabled": true,
+      "sort_order": 11
+    },
+    {
+      "key": "gallery",
+      "label": "Gallery",
+      "enabled": true,
+      "sort_order": 12
+    },
+    {
+      "key": "principal",
+      "label": "Principal Message",
+      "enabled": true,
+      "sort_order": 13
+    },
+    {
+      "key": "achievements",
+      "label": "Achievements",
+      "enabled": true,
+      "sort_order": 14
+    },
+    {
+      "key": "success_stories",
+      "label": "Success Stories",
+      "enabled": true,
+      "sort_order": 15
+    },
+    {
+      "key": "testimonials",
+      "label": "Testimonials",
+      "enabled": true,
+      "sort_order": 16
+    },
+    {
+      "key": "parent_trust",
+      "label": "Parent Trust Band",
+      "enabled": true,
+      "sort_order": 17
+    },
+    {
+      "key": "admissions",
+      "label": "Admissions",
+      "enabled": true,
+      "sort_order": 18
+    },
+    {
+      "key": "careers",
+      "label": "Careers",
+      "enabled": true,
+      "sort_order": 19
+    },
+    {
+      "key": "partners",
+      "label": "Partners",
+      "enabled": true,
+      "sort_order": 20
+    },
+    {
+      "key": "faq",
+      "label": "FAQ",
+      "enabled": true,
+      "sort_order": 21
+    },
+    {
+      "key": "contact",
+      "label": "Contact & Visit",
+      "enabled": true,
+      "sort_order": 22
+    },
+    {
+      "key": "final_cta",
+      "label": "Final CTA",
+      "enabled": true,
+      "sort_order": 23
+    }
+  ],
+  "theme": {
+    "primary_color": "#0d6efd",
+    "secondary_color": "#0f172a",
+    "accent_color": "#22c55e",
+    "cta_style": "outline",
+    "logo_path": "/front/theme1/images/nile-private-schools-logo.png",
+    "favicon_path": null
+  },
+  "seo": {
+    "meta_title": "School Talent — International School",
+    "meta_description": "School Talent International School — admissions, world-class education, and vibrant student life in New Cairo.",
+    "keywords": "international school, admissions, School Talent, New Cairo",
+    "og_image_path": null
+  }
+}

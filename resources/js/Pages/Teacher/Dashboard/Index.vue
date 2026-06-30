@@ -9,6 +9,8 @@ const props = defineProps({
     totalStreams:     Number,
     liveStreams:      Number,
     scheduledStreams: Number,
+    todaySchedule:   { type: Array, default: () => [] },
+    todayDayName:    { type: String, default: '' },
 })
 
 const statusLabel = {
@@ -74,6 +76,55 @@ const statusLabel = {
                                 <div class="text-muted small">بث مجدول</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Schedule -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-header-title mb-0">
+                        <i class="bi bi-calendar-day me-2 text-primary"></i>
+                        حصص اليوم
+                        <span v-if="todayDayName" class="badge bg-primary ms-2">{{ todayDayName }}</span>
+                    </h5>
+                    <Link :href="route('teacher.timetables.index')" class="btn btn-sm btn-outline-primary">
+                        الجدول الكامل
+                    </Link>
+                </div>
+                <div class="card-body p-0">
+                    <div v-if="todaySchedule.length === 0" class="text-center text-muted py-4">
+                        <i class="bi bi-calendar-x fs-2 d-block mb-1 opacity-25"></i>
+                        لا توجد حصص اليوم
+                    </div>
+                    <div v-else class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>رقم الحصة</th>
+                                    <th>الوقت</th>
+                                    <th>المادة</th>
+                                    <th>الفصل</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in todaySchedule" :key="item.id">
+                                    <td>{{ item.period?.period_number }}</td>
+                                    <td class="small">{{ item.period?.time_from }} – {{ item.period?.time_to }}</td>
+                                    <td class="fw-semibold">{{ item.subject?.name ?? '—' }}</td>
+                                    <td class="text-muted small">{{ item.period?.category?.name ?? '—' }}</td>
+                                    <td>
+                                        <Link
+                                            :href="route('teacher.lessons.from-period', item.period.id)"
+                                            class="btn btn-sm btn-primary"
+                                        >
+                                            <i class="bi bi-plus-lg me-1"></i> إضافة درس
+                                        </Link>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

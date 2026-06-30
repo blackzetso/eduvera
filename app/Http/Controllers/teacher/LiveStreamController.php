@@ -20,7 +20,7 @@ use Exception;
 class LiveStreamController extends Controller
 {
     /** Ensure the live stream belongs to the logged-in teacher. */
-    private function authorize(LiveStream $liveStream): void
+    private function assertTeacherOwnsStream(LiveStream $liveStream): void
     {
         abort_if($liveStream->teacher_email !== auth()->user()->email, 403, 'هذا البث لا يخصك.');
     }
@@ -245,7 +245,7 @@ class LiveStreamController extends Controller
 
     public function show(LiveStream $liveStream)
     {
-        $this->authorize($liveStream);
+        $this->assertTeacherOwnsStream($liveStream);
 
         $attendances = $liveStream->attendances()
             ->orderBy('join_time')
@@ -317,7 +317,7 @@ class LiveStreamController extends Controller
 
     public function edit(LiveStream $liveStream)
     {
-        $this->authorize($liveStream);
+        $this->assertTeacherOwnsStream($liveStream);
 
         $maxDuration = (int) (\App\Models\Setting::where('key', 'live_stream_max_duration')->first()?->value ?? 60);
 
@@ -373,7 +373,7 @@ class LiveStreamController extends Controller
 
     public function update(Request $request, LiveStream $liveStream)
     {
-        $this->authorize($liveStream);
+        $this->assertTeacherOwnsStream($liveStream);
 
         $validated = $request->validate([
             'title'               => 'required|string|max:255',
@@ -415,7 +415,7 @@ class LiveStreamController extends Controller
 
     public function destroy(LiveStream $liveStream)
     {
-        $this->authorize($liveStream);
+        $this->assertTeacherOwnsStream($liveStream);
 
         match ($liveStream->provider) {
             'teams'       => $liveStream->teams_meeting_id       ? (new TeamsService())->deleteMeeting($liveStream->teams_meeting_id)       : null,
@@ -439,7 +439,7 @@ class LiveStreamController extends Controller
 
     public function room(LiveStream $liveStream)
     {
-        $this->authorize($liveStream);
+        $this->assertTeacherOwnsStream($liveStream);
 
         if ($liveStream->status === 'scheduled') {
             $maxDuration    = (int) (\App\Models\Setting::where('key', 'live_stream_max_duration')->first()?->value ?? 60);
@@ -522,7 +522,7 @@ class LiveStreamController extends Controller
 
     public function updateStatus(Request $request, LiveStream $liveStream)
     {
-        $this->authorize($liveStream);
+        $this->assertTeacherOwnsStream($liveStream);
 
         $request->validate(['status' => 'required|in:scheduled,live,ended']);
 
@@ -542,7 +542,7 @@ class LiveStreamController extends Controller
 
     public function uploadRecording(Request $request, LiveStream $liveStream)
     {
-        $this->authorize($liveStream);
+        $this->assertTeacherOwnsStream($liveStream);
 
         $request->validate([
             'recording' => 'required|file|max:2097152',
@@ -578,7 +578,7 @@ class LiveStreamController extends Controller
 
     public function uploadWbMedia(Request $request, LiveStream $liveStream)
     {
-        $this->authorize($liveStream);
+        $this->assertTeacherOwnsStream($liveStream);
 
         $request->validate([
             'file' => 'required|file|mimes:mp4,webm,ogg,mov|max:524288',
@@ -591,7 +591,7 @@ class LiveStreamController extends Controller
 
     public function submitVideoUrl(Request $request, LiveStream $liveStream)
     {
-        $this->authorize($liveStream);
+        $this->assertTeacherOwnsStream($liveStream);
 
         $request->validate([
             'video_url' => [
@@ -616,7 +616,7 @@ class LiveStreamController extends Controller
 
     public function requestExtension(Request $request, LiveStream $liveStream)
     {
-        $this->authorize($liveStream);
+        $this->assertTeacherOwnsStream($liveStream);
         $request->validate(['minutes' => 'required|in:10,15,20,25,30']);
 
         $minutes = (int) $request->minutes;
@@ -634,7 +634,7 @@ class LiveStreamController extends Controller
 
     public function remainingSeconds(LiveStream $liveStream)
     {
-        $this->authorize($liveStream);
+        $this->assertTeacherOwnsStream($liveStream);
 
         $total = ($liveStream->start_datetime && $liveStream->end_datetime)
             ? (int) abs($liveStream->start_datetime->diffInSeconds($liveStream->end_datetime))

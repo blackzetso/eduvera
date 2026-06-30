@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Models\Setting;
+use App\Services\CoveragePrioritySettingsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
@@ -383,5 +384,27 @@ class SettingController extends Controller
     public function destroy(Setting $setting)
     {
         //
+    }
+
+    public function coverageSettings(CoveragePrioritySettingsService $priorities)
+    {
+        return Inertia::render('Admin/theme1/Settings/CoverageSettings', [
+            'priorityConfig' => $priorities->getRules(),
+        ]);
+    }
+
+    public function updateCoverageSettings(Request $request, CoveragePrioritySettingsService $priorities)
+    {
+        $request->validate([
+            'balance_penalty_per_point' => 'required|integer|min:0|max:30',
+            'week_penalty_per_coverage' => 'required|integer|min:0|max:30',
+            'rules' => 'required|array',
+            'rules.*.enabled' => 'nullable|boolean',
+            'rules.*.weight' => 'nullable|integer|min:0|max:300',
+        ]);
+
+        $priorities->saveRules($request->only(['balance_penalty_per_point', 'week_penalty_per_coverage', 'rules']));
+
+        return back()->with('success', 'تم حفظ أولويات تغطية الغياب بنجاح.');
     }
 }

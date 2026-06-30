@@ -1,0 +1,177 @@
+/**
+ * EDUVERA — project-wide responsive design system
+ * Breakpoints align with Bootstrap 5 (public/front/theme1/css/style.css):
+ *   sm  576px   md 768px   lg 992px   xl 1200px   xxl 1400px
+ * Use Bootstrap grid/utilities first; add rules here only when shared across modules.
+ */
+
+:root {
+  --eduvera-container-padding: clamp(0.75rem, 2.5vw, 1.25rem);
+  --eduvera-section-gap: clamp(1rem, 2vw, 1.5rem);
+  --eduvera-table-sticky-bg: var(--bs-body-bg, #fff);
+}
+
+/* ── Admin section nav (Website / Dova / Settings) ── */
+.eduvera-section-nav__toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.eduvera-section-nav__offcanvas.offcanvas-lg .offcanvas-body,
+.eduvera-section-nav__offcanvas.offcanvas-xl .offcanvas-body {
+  padding: 0;
+}
+
+@media (min-width: 992px) {
+  .eduvera-section-nav__offcanvas.offcanvas-lg {
+    position: static;
+    transform: none;
+    visibility: visible;
+    background: transparent;
+    border: 0;
+  }
+}
+
+@media (min-width: 1200px) {
+  .eduvera-section-nav__offcanvas.offcanvas-xl {
+    position: static;
+    transform: none;
+    visibility: visible;
+    background: transparent;
+    border: 0;
+  }
+}
+
+/* ── Tables: horizontal scroll + optional sticky header ── */
+.eduvera-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.eduvera-table-wrap--sticky-head thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--eduvera-table-sticky-bg);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* ── Dashboard KPI cards (canonical admin pattern) ── */
+.eduvera-kpi-row > [class*='col-'] {
+  display: flex;
+}
+
+.eduvera-kpi-row .card {
+  width: 100%;
+}
+
+/* ── Forms: prevent field overflow in multi-column grids ── */
+.eduvera-form-grid .form-control,
+.eduvera-form-grid .form-select {
+  min-width: 0;
+}
+
+/* ── Modals: use with Bootstrap modal-dialog ── */
+.eduvera-modal-dialog {
+  max-width: min(1140px, calc(100vw - 2rem));
+  margin-inline: auto;
+}
+
+/* ── Timetable / wizard toolbars ── */
+.eduvera-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.eduvera-toolbar > * {
+  min-width: 0;
+}
+
+/* ── Landing page: coordinate floating widgets with Dova ── */
+@media (max-width: 991.98px) {
+  body.st-school-talent .dova-widget {
+    inset-inline-end: 1rem;
+    bottom: calc(var(--st-dova-bottom, 5.5rem) + env(safe-area-inset-bottom, 0));
+  }
+}
+
+@media (max-width: 575.98px) {
+  body.st-school-talent {
+    --st-dova-launcher-h: 4rem;
+    --st-dova-bottom: 5rem;
+  }
+
+  body.st-school-talent .dova-widget {
+    bottom: calc(var(--st-dova-bottom) + env(safe-area-inset-bottom, 0));
+  }
+
+  body.st-school-talent .dova-widget__launcher {
+    width: 7.25rem;
+    height: 4.75rem;
+  }
+}
+
+/* ── Admin main sidebar scroll (shared Admin + Teacher) ── */
+@media (min-width: 1200px) {
+  .sidebar.navbar-expand-xl {
+    overflow: hidden;
+  }
+
+  .sidebar.navbar-expand-xl > .offcanvas.offcanvas-start {
+    flex: 1 1 0;
+    min-height: 0;
+    max-height: none;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
+
+  .sidebar.navbar-expand-xl .offcanvas .offcanvas-body.sidebar-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .sidebar.navbar-expand-xl .offcanvas .offcanvas-body.sidebar-content #navbar-sidebar {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .sidebar.navbar-expand-xl .offcanvas .offcanvas-body.sidebar-content #navbar-sidebar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .sidebar.navbar-expand-xl .offcanvas-body.sidebar-content {
+    max-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar.navbar-expand-xl .offcanvas-body.sidebar-content #navbar-sidebar {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .sidebar.navbar-expand-xl .offcanvas-body.sidebar-content #navbar-sidebar::-webkit-scrollbar {
+    display: none;
+  }
+}

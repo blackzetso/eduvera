@@ -26,7 +26,10 @@ class JetstreamServiceProvider extends ServiceProvider
 
         Jetstream::deleteUsersUsing(DeleteUser::class);
 
-        Vite::prefetch(concurrency: 3);
+        // Prefetching every Vite chunk blocks php artisan serve (single-threaded on Windows).
+        if (! app()->environment('local')) {
+            Vite::prefetch(concurrency: 3);
+        }
     }
 
     /**

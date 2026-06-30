@@ -1,0 +1,8 @@
+.form-runtime-section + .form-runtime-section {
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding-top: 1.25rem;
+}
+
+.form-runtime-field.has-error .form-label {
+  color: var(--bs-danger, #dc3545);
+}

@@ -10,35 +10,78 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+use App\Models\StudentEnrollment;
+use App\Services\StudentCodeService;
+use App\Services\StudentEnrollmentService;
+use App\Services\StudentGuardianService;
+use App\Services\StudentProfileService;
+use App\Services\StudentStatusService;
+use App\Support\Student\GuardianRelationship;
+use App\Support\Student\StudentStatus;
 
 class StudentController extends Controller
 {
+    public function __construct(
+        protected StudentProfileService $studentProfile,
+        protected StudentCodeService $studentCodes,
+        protected StudentEnrollmentService $studentEnrollments,
+        protected StudentStatusService $studentStatus,
+        protected StudentGuardianService $studentGuardians,
+    ) {}
+
     /**
-     * Display a listing of students and guardians.
+     * Display a listing of students.
      */
     public function index(Request $request)
     {
-        $tab = $request->get('tab', 'students');
+        $query = User::query()
+            ->where('user_type', 'student')
+            ->with(['category', 'currentStudentEnrollment']);
 
-        // Get all students
-        $students = User::where('user_type', 'student')
-            ->with('category')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        if ($status = $request->input('status')) {
+            $query->where('student_status', $status);
+        }
 
-        // Get all guardians/parents
-        $guardians = User::where('user_type', 'guardian')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        if ($academicYear = $request->input('academic_year')) {
+            $query->whereHas('currentStudentEnrollment', fn ($q) => $q->where('academic_year', $academicYear));
+        }
 
-        // Get all categories for filtering
+        if ($stageId = $request->input('stage_id')) {
+            $query->where(function ($q) use ($stageId) {
+                $q->whereHas('currentStudentEnrollment', fn ($en) => $en->where('stage_category_id', (int) $stageId))
+                    ->orWhereHas('category', function ($cat) use ($stageId) {
+                        $cat->where('id', (int) $stageId)
+                            ->orWhere('parent_id', (int) $stageId);
+                    });
+            });
+        }
+
+        $students = $query->orderByDesc('created_at')->get();
+
         $categories = Category::whereNull('parent_id')->with('children')->get();
 
         return Inertia::render('Admin/theme1/Students/Index', [
             'students' => $students,
-            'guardians' => $guardians,
             'categories' => $categories,
-            'tab' => $tab,
+            'filters' => [
+                'status' => $request->input('status', ''),
+                'academic_year' => $request->input('academic_year', ''),
+                'stage_id' => $request->input('stage_id', ''),
+            ],
+            'filterOptions' => [
+                'statuses' => StudentStatus::options(),
+                'academic_years' => StudentEnrollment::query()
+                    ->where('is_current', true)
+                    ->distinct()
+                    ->orderByDesc('academic_year')
+                    ->pluck('academic_year')
+                    ->values(),
+                'stages' => Category::query()
+                    ->whereNull('parent_id')
+                    ->where('status', 'enable')
+                    ->orderBy('name')
+                    ->get(['id', 'name']),
+            ],
         ]);
     }
 
@@ -47,29 +90,7 @@ class StudentController extends Controller
      */
     public function create()
     {
-        $categories = Category::whereNull('parent_id')
-            ->where('status', 'enable')
-            ->with(['children' => fn($q) => $q->where('status', 'enable')->orderBy('name')
-                ->with(['children' => fn($q2) => $q2->where('status', 'enable')->orderBy('name')
-                    ->with(['children' => fn($q3) => $q3->where('status', 'enable')->orderBy('name')])
-                ])
-            ])
-            ->orderBy('name')
-            ->get()
-            ->map(fn($c) => [
-                'id'       => $c->id,
-                'name'     => $c->name,
-                'children' => $c->children->map(fn($ch) => [
-                    'id'       => $ch->id,
-                    'name'     => $ch->name,
-                    'children' => $ch->children->map(fn($gch) => [
-                        'id'       => $gch->id,
-                        'name'     => $gch->name,
-                        'children' => $gch->children->map(fn($sgch) => ['id' => $sgch->id, 'name' => $sgch->name])->values(),
-                    ])->values(),
-                ])->values(),
-            ]);
-
+        $categories = $this->categoryTreeForForms();
         $parents = User::where('user_type', 'guardian')
             ->orderBy('name')
             ->get(['id', 'name', 'national_id', 'email']);
@@ -77,6 +98,8 @@ class StudentController extends Controller
         return Inertia::render('Admin/theme1/Students/Create', [
             'categories' => $categories,
             'parents'    => $parents,
+            'statusOptions' => StudentStatus::options(),
+            'relationshipTypeOptions' => GuardianRelationship::typeOptions(),
         ]);
     }
 
@@ -218,7 +241,6 @@ class StudentController extends Controller
                 $idx = $headerIndex[$col] ?? null;
                 $values[$col] = $idx !== null ? trim((string) ($row[$idx] ?? '')) : '';
             }
-            // Read optional columns
             foreach ($optionalHeaders as $col) {
                 $idx = $headerIndex[$col] ?? null;
                 $values[$col] = $idx !== null ? trim((string) ($row[$idx] ?? '')) : '';
@@ -281,7 +303,6 @@ class StudentController extends Controller
         }
 
         DB::transaction(function () use ($rowsToInsert) {
-            // Build a lookup: national_id => guardian user_id
             $nationalIds = collect($rowsToInsert)
                 ->pluck('guardian_national_id')
                 ->filter()
@@ -298,17 +319,33 @@ class StudentController extends Controller
 
             foreach ($rowsToInsert as $row) {
                 $student = User::create([
-                    'name'        => $row['name'],
-                    'email'       => $row['email'],
-                    'password'    => $row['password'],
-                    'phone'       => $row['phone'],
-                    'category_id' => $row['category_id'],
-                    'user_type'   => 'student',
-                    'role'        => 'student',
+                    'name'             => $row['name'],
+                    'email'            => $row['email'],
+                    'password'         => $row['password'],
+                    'phone'            => $row['phone'],
+                    'category_id'      => $row['category_id'],
+                    'user_type'        => 'student',
+                    'role'             => 'student',
+                    'student_code'     => $this->studentCodes->generate(),
+                    'enrollment_date'  => now()->toDateString(),
+                    'student_status'   => StudentStatus::ACTIVE,
                 ]);
 
+                $this->studentStatus->recordInitial($student);
+                $this->studentEnrollments->recordInitialEnrollment(
+                    $student,
+                    $student->category_id,
+                    $student->enrollment_date?->toDateString(),
+                    'initial',
+                    'import',
+                );
+
                 if (!empty($row['guardian_national_id']) && isset($guardianLookup[$row['guardian_national_id']])) {
-                    $student->guardians()->attach($guardianLookup[$row['guardian_national_id']]);
+                    $student->guardians()->attach($guardianLookup[$row['guardian_national_id']], [
+                        'relationship_type' => GuardianRelationship::GUARDIAN,
+                        'is_primary' => true,
+                        'is_pickup_authorized' => true,
+                    ]);
                 }
             }
         });
@@ -327,52 +364,187 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'phone' => 'nullable|string|max:20',
-            'password' => 'required|string|min:8|confirmed',
-            'category_id' => 'required|exists:categories,id',
-        ]);
-
+        $data = $this->validateStudentPayload($request, creating: true);
         $data['user_type'] = 'student';
+        $data['role'] = 'student';
         $data['password'] = bcrypt($data['password']);
+        $data['student_code'] = $this->studentCodes->generate();
+        $data['student_status'] = $data['student_status'] ?? StudentStatus::ACTIVE;
+
+        if (empty($data['enrollment_date'])) {
+            $data['enrollment_date'] = now()->toDateString();
+        }
+
+        $data['name'] = $this->resolveDisplayName($data);
 
         $student = User::create($data);
 
-        if (!empty($request->guardian_ids)) {
-            $validGuardians = User::where('user_type', 'guardian')
-                ->whereIn('id', $request->guardian_ids)
-                ->pluck('id');
-            $student->guardians()->sync($validGuardians);
-        }
+        $this->studentStatus->recordInitial($student);
 
-        return redirect()->route('admin.students.index')->with('success', 'تم إنشاء السجل بنجاح');
+        $this->studentEnrollments->recordInitialEnrollment(
+            $student,
+            $student->category_id,
+            $student->enrollment_date?->toDateString(),
+        );
+
+        $this->studentGuardians->sync($student, $this->normalizeGuardianLinks($request));
+
+        return redirect()
+            ->route('admin.students.show', $student)
+            ->with('success', 'تم إنشاء الطالب بنجاح');
     }
 
     /**
-     * Display the specified student.
+     * Display the student profile hub.
      */
-    public function show($id)
+    public function show(User $student)
     {
-        $student = User::findOrFail($id);
-        $categories = Category::whereNull('parent_id')->with('children')->get();
+        $this->studentCodes->assignIfMissing($student);
 
-        return Inertia::render('Admin/theme1/Students/Show', [
-            'student' => $student,
-            'categories' => $categories,
-        ]);
+        return Inertia::render('Admin/theme1/Students/Show', array_merge(
+            $this->studentProfile->forAdmin($student),
+            [
+                'categories' => $this->categoryTreeForForms(),
+                'relationshipTypeOptions' => GuardianRelationship::typeOptions(),
+            ],
+        ));
     }
 
     /**
      * Show the form for editing the student.
      */
-    public function edit($id)
+    public function edit(User $student)
     {
-        $student = User::findOrFail($id);
+        abort_unless($student->user_type === 'student', 404);
+
         $student->load('guardians:id,name,national_id,email');
 
-        $categories = Category::whereNull('parent_id')
+        $parents = User::where('user_type', 'guardian')
+            ->orderBy('name')
+            ->get(['id', 'name', 'national_id', 'email']);
+
+        return Inertia::render('Admin/theme1/Students/Edit', [
+            'student'    => $student,
+            'categories' => $this->categoryTreeForForms(),
+            'parents'    => $parents,
+            'relationshipTypeOptions' => GuardianRelationship::typeOptions(),
+        ]);
+    }
+
+    /**
+     * Update the student in storage.
+     */
+    public function update(Request $request, User $student)
+    {
+        abort_unless($student->user_type === 'student', 404);
+
+        $data = $this->validateStudentPayload($request, creating: false, studentId: $student->id);
+        $data['name'] = $this->resolveDisplayName($data);
+
+        $oldCategoryId = $student->category_id;
+
+        $student->update($data);
+
+        if ((int) ($data['category_id'] ?? 0) !== (int) $oldCategoryId) {
+            $this->studentEnrollments->handleCategoryChange(
+                $student->fresh(),
+                $oldCategoryId,
+                $data['category_id'] ?? null,
+            );
+        }
+
+        $this->studentGuardians->sync($student, $this->normalizeGuardianLinks($request));
+
+        return redirect()
+            ->route('admin.students.show', $student)
+            ->with('success', 'تم تحديث بيانات الطالب بنجاح');
+    }
+
+    /**
+     * Remove the student from storage.
+     */
+    public function destroy(User $student)
+    {
+        abort_unless($student->user_type === 'student', 404);
+        $student->delete();
+
+        return redirect()
+            ->route('admin.students.index')
+            ->with('success', 'تم حذف الطالب بنجاح');
+    }
+
+    protected function validateStudentPayload(Request $request, bool $creating, ?int $studentId = null): array
+    {
+        $rules = [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email' . ($studentId ? ',' . $studentId : ''),
+            'phone' => 'nullable|string|max:20',
+            'category_id' => ($creating ? 'required' : 'nullable') . '|exists:categories,id',
+            'first_name' => 'nullable|string|max:100',
+            'father_name' => 'nullable|string|max:100',
+            'grandfather_name' => 'nullable|string|max:100',
+            'date_of_birth' => 'nullable|date',
+            'gender' => 'nullable|in:male,female',
+            'national_id' => 'nullable|string|max:50',
+            'enrollment_date' => 'nullable|date',
+            'student_status' => $creating ? 'nullable|in:' . implode(',', StudentStatus::all()) : 'prohibited',
+            'guardian_ids' => 'nullable|array',
+            'guardian_ids.*' => 'integer|exists:users,id',
+            'guardian_links' => 'nullable|array',
+            'guardian_links.*.guardian_id' => 'required|integer|exists:users,id',
+            'guardian_links.*.relationship_type' => 'nullable|in:' . implode(',', GuardianRelationship::types()),
+            'guardian_links.*.is_primary' => 'nullable|boolean',
+            'guardian_links.*.is_emergency_contact' => 'nullable|boolean',
+            'guardian_links.*.is_pickup_authorized' => 'nullable|boolean',
+            'guardian_links.*.is_financial_responsible' => 'nullable|boolean',
+        ];
+
+        if ($creating) {
+            $rules['password'] = 'required|string|min:8|confirmed';
+        }
+
+        return $request->validate($rules);
+    }
+
+    protected function resolveDisplayName(array $data): string
+    {
+        $parts = array_filter([
+            $data['first_name'] ?? null,
+            $data['father_name'] ?? null,
+            $data['grandfather_name'] ?? null,
+        ]);
+
+        return $parts ? implode(' ', $parts) : $data['name'];
+    }
+
+    protected function normalizeGuardianLinks(Request $request): array
+    {
+        $links = $request->input('guardian_links', []);
+
+        if (! empty($links)) {
+            return collect($links)
+                ->filter(fn ($link) => ! empty($link['guardian_id']))
+                ->values()
+                ->all();
+        }
+
+        return collect($request->input('guardian_ids', []))
+            ->filter()
+            ->values()
+            ->map(fn ($id, $index) => [
+                'guardian_id' => (int) $id,
+                'relationship_type' => GuardianRelationship::GUARDIAN,
+                'is_primary' => $index === 0,
+                'is_emergency_contact' => false,
+                'is_pickup_authorized' => true,
+                'is_financial_responsible' => false,
+            ])
+            ->all();
+    }
+
+    protected function categoryTreeForForms(): array
+    {
+        return Category::whereNull('parent_id')
             ->where('status', 'enable')
             ->with(['children' => fn($q) => $q->where('status', 'enable')->orderBy('name')
                 ->with(['children' => fn($q2) => $q2->where('status', 'enable')->orderBy('name')
@@ -393,55 +565,7 @@ class StudentController extends Controller
                         'children' => $gch->children->map(fn($sgch) => ['id' => $sgch->id, 'name' => $sgch->name])->values(),
                     ])->values(),
                 ])->values(),
-            ]);
-
-        $parents = User::where('user_type', 'guardian')
-            ->orderBy('name')
-            ->get(['id', 'name', 'national_id', 'email']);
-
-        return Inertia::render('Admin/theme1/Students/Edit', [
-            'student'    => $student,
-            'categories' => $categories,
-            'parents'    => $parents,
-        ]);
-    }
-
-    /**
-     * Update the student in storage.
-     */
-    public function update(Request $request, $id)
-    {
-        $student = User::findOrFail($id);
-
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'phone' => 'nullable|string|max:20',
-            'category_id' => 'nullable|exists:categories,id',
-        ]);
-
-        $student->update($data);
-
-        $validGuardians = [];
-        if (!empty($request->guardian_ids)) {
-            $validGuardians = User::where('user_type', 'guardian')
-                ->whereIn('id', $request->guardian_ids)
-                ->pluck('id')
-                ->toArray();
-        }
-        $student->guardians()->sync($validGuardians);
-
-        return redirect()->route('admin.students.index')->with('success', 'تم تحديث بيانات الطالب بنجاح');
-    }
-
-    /**
-     * Remove the student from storage.
-     */
-    public function destroy($id)
-    {
-        $student = User::findOrFail($id);
-        $student->delete();
-
-        return back()->with('success', 'تم حذف الطالب بنجاح');
+            ])
+            ->all();
     }
 }

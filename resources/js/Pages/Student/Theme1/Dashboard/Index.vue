@@ -1,6 +1,9 @@
 <script setup>
     import AppLayout from '@/Pages/Student/Theme1/Layout/App.vue'
-    import { Head } from '@inertiajs/vue3'
+    import { Head, usePage } from '@inertiajs/vue3'
+
+    const page = usePage()
+    const user = page.props.auth.user
 </script>
 <template>
     <Head title="Student Dashboard" />
@@ -25,7 +28,7 @@
                                     <!-- Avatar -->
                                     <div class="col-auto mt-4 mt-md-0">
                                         <div class="avatar avatar-xxl mt-n3">
-                                            <img class="avatar-img rounded-circle border border-white border-3 shadow" src="/front/theme1/images/avatar/01.jpg" alt="">
+                                            <img class="avatar-img rounded-circle border border-white border-3 shadow" :src="user?.profile_photo_url" :alt="user?.name" @error="$event.target.src='/front/theme1/images/avatar/01.jpg'">
                                         </div>
                                     </div>
                                     <!-- Profile info -->

@@ -1,0 +1,138 @@
+/* EDUVERA UX-7 — Workspace context switching */
+
+.workspace-layout {
+  --workspace-accent: #0d6efd;
+  --workspace-accent-soft: #e8f1ff;
+}
+
+.workspace-layout--family {
+  --workspace-accent: #198754;
+  --workspace-accent-soft: #e8f5ee;
+}
+
+.workspace-layout--student {
+  --workspace-accent: #0d6efd;
+  --workspace-accent-soft: #e8f1ff;
+}
+
+.workspace-context-banner {
+  border-radius: 1rem;
+  border: 1px solid rgba(13, 110, 253, 0.15);
+  background: linear-gradient(135deg, #f8fafc 0%, var(--workspace-accent-soft) 100%);
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+}
+
+.workspace-context-banner--student {
+  --workspace-accent: #0d6efd;
+  --workspace-accent-soft: #e8f1ff;
+}
+
+.workspace-context-banner--family {
+  --workspace-accent: #198754;
+  --workspace-accent-soft: #e8f5ee;
+}
+
+.workspace-context-banner__icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--workspace-accent-soft);
+  color: var(--workspace-accent);
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.workspace-context-banner__mode {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--workspace-accent);
+}
+
+.workspace-context-banner__entity {
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.workspace-sidebar {
+  position: sticky;
+  top: 5.5rem;
+  align-self: flex-start;
+}
+
+.workspace-sidebar__nav {
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+  padding: 0.65rem;
+}
+
+.workspace-sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  border: none;
+  background: transparent;
+  border-radius: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #475569;
+  text-align: inherit;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.workspace-sidebar__link:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.workspace-sidebar__link--active {
+  background: var(--workspace-accent-soft);
+  color: var(--workspace-accent);
+}
+
+.workspace-sidebar__link i {
+  font-size: 1rem;
+  width: 1.15rem;
+  text-align: center;
+}
+
+.workspace-mobile-menu .dropdown-menu {
+  border-radius: 1rem;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.12);
+  padding: 0.5rem;
+  min-width: 14rem;
+}
+
+.workspace-mobile-menu__item {
+  border-radius: 0.65rem;
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.workspace-mobile-menu__item.active {
+  background: var(--workspace-accent-soft);
+  color: var(--workspace-accent);
+}
+
+.workspace-content-area {
+  min-width: 0;
+}
+
+.workspace-command-center {
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 991.98px) {
+  .workspace-sidebar {
+    display: none;
+  }
+}

@@ -1,0 +1,336 @@
+/* EDUVERA Admissions Command Center — Executive Dashboard UX */
+
+:root {
+  --acc-radius: 0.75rem;
+  --acc-radius-sm: 0.5rem;
+  --acc-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --acc-shadow-hover: 0 4px 12px rgba(15, 23, 42, 0.1);
+  --acc-section-gap: 0.75rem;
+  --acc-card-pad: 0.75rem;
+  --acc-card-pad-md: 1rem;
+}
+
+.admissions-command-center {
+  display: flex;
+  flex-direction: column;
+  gap: var(--acc-section-gap);
+}
+
+.admissions-command-center .mb-3,
+.admissions-command-center .mb-4 {
+  margin-bottom: var(--acc-section-gap) !important;
+}
+
+.admissions-command-card {
+  border: 0;
+  border-radius: var(--acc-radius);
+  box-shadow: var(--acc-shadow);
+  transition: box-shadow 0.15s ease;
+}
+
+.admissions-command-card:hover {
+  box-shadow: var(--acc-shadow-hover);
+}
+
+.admissions-command-card .card-body {
+  padding: var(--acc-card-pad) var(--acc-card-pad-md) !important;
+}
+
+.admissions-command-card .card-header {
+  padding: var(--acc-card-pad) var(--acc-card-pad-md) !important;
+  background: transparent;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Header */
+.admissions-header-avatar {
+  width: 52px;
+  height: 52px;
+  font-size: 1.35rem;
+}
+
+.admissions-header-kpi {
+  min-width: 3.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--acc-radius-sm);
+  background: rgba(var(--bs-primary-rgb), 0.08);
+  line-height: 1.1;
+  text-align: center;
+}
+
+.admissions-header-kpi__value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--bs-primary);
+}
+
+.admissions-header-kpi__label {
+  font-size: 0.62rem;
+  color: var(--bs-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.admissions-exec-badge {
+  font-size: 0.72rem;
+  padding: 0.2rem 0.55rem;
+}
+
+/* Executive KPI strip */
+.admissions-kpi-card {
+  padding: var(--acc-card-pad);
+  border-radius: var(--acc-radius-sm);
+  background: var(--bs-body-bg);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  height: 100%;
+}
+
+.admissions-kpi-card__value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.admissions-kpi-card__label {
+  font-size: 0.68rem;
+  color: var(--bs-secondary);
+  margin-top: 0.15rem;
+}
+
+/* Decision readiness hero */
+.admissions-readiness-hero {
+  border-radius: var(--acc-radius);
+  padding: var(--acc-card-pad-md);
+  border: 2px solid transparent;
+}
+
+.admissions-readiness-hero--ready {
+  background: linear-gradient(135deg, rgba(var(--bs-success-rgb), 0.12), rgba(var(--bs-success-rgb), 0.04));
+  border-color: rgba(var(--bs-success-rgb), 0.35);
+}
+
+.admissions-readiness-hero--blocked {
+  background: linear-gradient(135deg, rgba(var(--bs-danger-rgb), 0.1), rgba(var(--bs-danger-rgb), 0.03));
+  border-color: rgba(var(--bs-danger-rgb), 0.3);
+}
+
+.admissions-readiness-hero__title {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+/* Pipeline progress */
+.admissions-pipeline-exec {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.admissions-pipeline-exec::-webkit-scrollbar {
+  display: none;
+}
+
+.admissions-pipeline-exec__step {
+  flex: 1 0 auto;
+  min-width: 4.5rem;
+  text-align: center;
+  position: relative;
+}
+
+.admissions-pipeline-exec__node {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+  border: 2px solid var(--bs-border-color);
+  background: var(--bs-body-bg);
+}
+
+.admissions-pipeline-exec__step--completed .admissions-pipeline-exec__node {
+  background: var(--bs-success);
+  border-color: var(--bs-success);
+  color: #fff;
+}
+
+.admissions-pipeline-exec__step--active .admissions-pipeline-exec__node {
+  background: var(--bs-primary);
+  border-color: var(--bs-primary);
+  color: #fff;
+  box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.2);
+}
+
+.admissions-pipeline-exec__step--blocked .admissions-pipeline-exec__node {
+  background: var(--bs-danger);
+  border-color: var(--bs-danger);
+  color: #fff;
+}
+
+.admissions-pipeline-exec__step--future .admissions-pipeline-exec__node {
+  background: var(--bs-light);
+  color: var(--bs-secondary);
+}
+
+.admissions-pipeline-exec__label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--bs-secondary);
+  line-height: 1.2;
+}
+
+.admissions-pipeline-exec__connector {
+  flex: 1 0 0.75rem;
+  height: 2px;
+  background: var(--bs-border-color);
+  margin-top: 1rem;
+  min-width: 0.5rem;
+}
+
+.admissions-pipeline-exec__connector--done {
+  background: var(--bs-success);
+}
+
+/* Engagement widget */
+.admissions-engagement-card {
+  border-radius: var(--acc-radius-sm);
+  border: 1px solid rgba(var(--bs-info-rgb), 0.2);
+  background: rgba(var(--bs-info-rgb), 0.04);
+  padding: 0.5rem 0.65rem;
+}
+
+/* Visit executive widget */
+.admissions-visit-exec {
+  max-height: 260px;
+}
+
+.admissions-visit-exec .card-body {
+  padding: var(--acc-card-pad) !important;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.admissions-visit-exec__body {
+  flex-direction: column;
+  min-height: 0;
+}
+
+.admissions-visit-exec__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 0.75rem;
+}
+
+.admissions-visit-exec__field--action {
+  grid-column: 1 / -1;
+  padding-top: 0.15rem;
+  border-top: 1px dashed rgba(0, 0, 0, 0.08);
+}
+
+.admissions-visit-exec__label {
+  font-size: 0.65rem;
+  color: var(--bs-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.1rem;
+}
+
+.admissions-visit-exec__value {
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.admissions-visit-exec__status {
+  font-size: 0.78rem;
+  padding: 0.3rem 0.55rem;
+}
+
+.admissions-visit-health {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.admissions-visit-health__label {
+  font-size: 0.68rem;
+}
+
+.admissions-visit-exec__empty {
+  min-height: 5rem;
+}
+
+.admissions-visit-exec__footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.admissions-visit-ops {
+  padding: var(--acc-card-pad);
+  border-radius: var(--acc-radius-sm);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(var(--bs-primary-rgb), 0.02);
+}
+
+/* Duplicate / family heroes */
+.admissions-hero-strip {
+  border-radius: var(--acc-radius);
+  padding: var(--acc-card-pad-md);
+}
+
+.admissions-hero-strip--danger {
+  background: linear-gradient(135deg, rgba(var(--bs-danger-rgb), 0.08), transparent);
+  border: 1px solid rgba(var(--bs-danger-rgb), 0.25);
+}
+
+.admissions-hero-strip--warning {
+  background: linear-gradient(135deg, rgba(var(--bs-warning-rgb), 0.1), transparent);
+  border: 1px solid rgba(var(--bs-warning-rgb), 0.35);
+}
+
+.admissions-hero-strip--success {
+  background: linear-gradient(135deg, rgba(var(--bs-success-rgb), 0.08), transparent);
+  border: 1px solid rgba(var(--bs-success-rgb), 0.25);
+}
+
+.admissions-match-row {
+  padding: 0.45rem 0.65rem;
+  border-radius: var(--acc-radius-sm);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Mobile */
+@media (max-width: 767.98px) {
+  .admissions-command-center .eduvera-toolbar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .admissions-command-center .eduvera-toolbar .ms-auto {
+    margin-left: 0 !important;
+    width: 100%;
+  }
+
+  .admissions-header-kpi {
+    min-width: 2.75rem;
+  }
+
+  .admissions-kpi-card__value {
+    font-size: 1.15rem;
+  }
+
+  .admissions-pipeline-exec__label {
+    font-size: 0.62rem;
+  }
+
+  .admissions-readiness-hero__title {
+    font-size: 1rem;
+  }
+}

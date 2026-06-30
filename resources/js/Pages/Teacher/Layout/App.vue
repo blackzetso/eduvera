@@ -1,10 +1,10 @@
 <script setup>
 import { Link, router, usePage } from '@inertiajs/vue3'
 import { route } from 'ziggy-js'
-import { useTranslations } from '@/composables/translations'
+import { useDashboardUrl } from '@/composables/useDashboardUrl'
 
-const { t } = useTranslations()
 const page = usePage()
+const { dashboardUrl } = useDashboardUrl()
 
 function changeLang(lang) {
     router.post(route('change.language'), { lang })
@@ -30,15 +30,27 @@ function changeLang(lang) {
 
                         <li class="nav-item">
                             <Link :href="route('teacher.dashboard.index')" class="nav-link">
-                                <i class="bi bi-house fa-fw me-2"></i>Dashboard
+                                <i class="bi bi-house fa-fw me-2"></i>لوحة التحكم
                             </Link>
                         </li>
 
                         <li class="nav-item ms-2 my-2">Academic</li>
 
                         <li class="nav-item">
+                            <Link class="nav-link" :href="route('teacher.lessons.index')">
+                                <i class="bi bi-journal-text fa-fw me-2"></i>دروسي
+                            </Link>
+                        </li>
+
+                        <li class="nav-item">
                             <Link class="nav-link" :href="route('teacher.timetables.index')">
-                                <i class="bi bi-calendar-week fa-fw me-2"></i>{{ t('timetable') }}
+                                <i class="bi bi-calendar-week fa-fw me-2"></i>حصصي
+                            </Link>
+                        </li>
+
+                        <li class="nav-item">
+                            <Link class="nav-link" :href="route('teacher.timetables.grid')">
+                                <i class="bi bi-calendar3 fa-fw me-2"></i>تعيين الحصص
                             </Link>
                         </li>
 
@@ -116,7 +128,7 @@ function changeLang(lang) {
                                 <!-- Profile dropdown -->
                                 <li class="nav-item ms-2 ms-md-3 dropdown">
                                     <a class="avatar avatar-sm p-0" href="#" role="button" data-bs-auto-close="outside" data-bs-display="static" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <img class="avatar-img rounded-circle" src="/front/theme1/images/avatar/01.jpg" alt="avatar">
+                                        <img class="avatar-img rounded-circle" :src="page.props.auth?.user?.profile_photo_url" :alt="page.props.auth?.user?.name" @error="$event.target.src='/front/theme1/images/avatar/01.jpg'">
                                     </a>
                                     <ul class="dropdown-menu dropdown-animation dropdown-menu-end shadow pt-3" aria-labelledby="profileDropdown">
                                         <li class="px-3 pb-2">
@@ -124,6 +136,11 @@ function changeLang(lang) {
                                             <p class="small text-muted mb-0">{{ page.props.auth?.user?.email }}</p>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <Link class="dropdown-item" :href="dashboardUrl">
+                                                <i class="bi bi-speedometer2 fa-fw me-2"></i>لوحة التحكم
+                                            </Link>
+                                        </li>
                                         <li>
                                             <Link as="button" method="post" :href="route('logout')" class="dropdown-item text-danger">
                                                 <i class="bi bi-power fa-fw me-2"></i>تسجيل الخروج
@@ -145,23 +162,4 @@ function changeLang(lang) {
     </main>
 </template>
 
-<style>
-@media (min-width: 1200px) {
-  .sidebar.navbar-expand-xl {
-    overflow: hidden;
-  }
-  .sidebar.navbar-expand-xl > .offcanvas.offcanvas-start {
-    flex: 1 1 0;
-    min-height: 0;
-    max-height: none;
-    display: flex !important;
-    flex-direction: column !important;
-    height: auto !important;
-  }
-  .sidebar.navbar-expand-xl .offcanvas .offcanvas-body.sidebar-content {
-    flex: 1 1 auto !important;
-    min-height: 0 !important;
-    overflow: hidden !important;
-  }
-}
-</style>
+<!-- Sidebar scroll rules: resources/css/eduvera-responsive.css -->

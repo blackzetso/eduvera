@@ -13,6 +13,17 @@ use Carbon\Carbon;
 
 class LiveStreamQuizController extends Controller
 {
+    /**
+     * Abort with 403 if the authenticated user is a teacher who does not own the stream.
+     * Uses teacher_email because live_streams has no teacher_id column.
+     */
+    private function assertTeacherOwns(LiveStream $stream): void
+    {
+        if (auth()->user()?->user_type === 'teacher') {
+            abort_if($stream->teacher_email !== auth()->user()->email, 403, 'هذا البث لا يخصك.');
+        }
+    }
+
     // ── Teacher Methods (admin auth) ──────────────────────────────────────────
 
     /**
@@ -20,6 +31,7 @@ class LiveStreamQuizController extends Controller
      */
     public function index(LiveStream $liveStream)
     {
+        $this->assertTeacherOwns($liveStream);
         $quizzes = $liveStream->quizzes()
             ->withCount('answers')
             ->orderBy('sort_order')
@@ -35,6 +47,8 @@ class LiveStreamQuizController extends Controller
      */
     public function store(Request $request, LiveStream $liveStream)
     {
+        $this->assertTeacherOwns($liveStream);
+
         $data = $request->validate([
             'question_text'  => 'required|string|max:2000',
             'question_type'  => 'required|in:true_false,true_false_correction,fill_blank,multiple_choice,essay,pdf_exam',
@@ -80,6 +94,8 @@ class LiveStreamQuizController extends Controller
      */
     public function update(Request $request, LiveStream $liveStream, LiveStreamQuiz $quiz)
     {
+        $this->assertTeacherOwns($liveStream);
+
         if ($quiz->live_stream_id !== $liveStream->id) {
             abort(404);
         }
@@ -141,6 +157,8 @@ class LiveStreamQuizController extends Controller
      */
     public function destroy(LiveStream $liveStream, LiveStreamQuiz $quiz)
     {
+        $this->assertTeacherOwns($liveStream);
+
         if ($quiz->live_stream_id !== $liveStream->id) {
             abort(404);
         }
@@ -159,6 +177,8 @@ class LiveStreamQuizController extends Controller
      */
     public function setTime(Request $request, LiveStream $liveStream)
     {
+        $this->assertTeacherOwns($liveStream);
+
         $data = $request->validate([
             'time_limit' => 'required|integer|min:10|max:3600',
         ]);
@@ -175,6 +195,8 @@ class LiveStreamQuizController extends Controller
      */
     public function activate(LiveStream $liveStream, LiveStreamQuiz $quiz)
     {
+        $this->assertTeacherOwns($liveStream);
+
         if ($quiz->live_stream_id !== $liveStream->id) {
             abort(404);
         }
@@ -209,6 +231,8 @@ class LiveStreamQuizController extends Controller
      */
     public function close(LiveStream $liveStream, LiveStreamQuiz $quiz)
     {
+        $this->assertTeacherOwns($liveStream);
+
         if ($quiz->live_stream_id !== $liveStream->id) {
             abort(404);
         }
@@ -229,6 +253,8 @@ class LiveStreamQuizController extends Controller
      */
     public function answers(LiveStream $liveStream, LiveStreamQuiz $quiz)
     {
+        $this->assertTeacherOwns($liveStream);
+
         if ($quiz->live_stream_id !== $liveStream->id) {
             abort(404);
         }

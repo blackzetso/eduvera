@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\admin;
 
+use App\Models\Timetable;
+use App\Services\DepartmentPlanService;
 use Inertia\inertia;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -13,7 +15,16 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        return inertia::render('Admin/theme1/Index');
+        $departmentNeedsSummary = [];
+        $timetable = Timetable::query()->where('status', 'active')->first() ?? Timetable::query()->first();
+        if ($timetable) {
+            $plans = app(DepartmentPlanService::class)->activePlansForTimetable($timetable);
+            $departmentNeedsSummary = app(DepartmentPlanService::class)->executiveSummary($plans);
+        }
+
+        return inertia::render('Admin/theme1/Index', [
+            'departmentNeedsSummary' => $departmentNeedsSummary,
+        ]);
     }
 
     /**

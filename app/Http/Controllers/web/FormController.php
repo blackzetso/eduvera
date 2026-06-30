@@ -11,7 +11,14 @@ class FormController extends Controller
 {
     public function index($id)
     {
-        $form = Form::with('inputs')->where('id', $id)->where('status', 'enable')->firstOrFail();
-        return Inertia::render('Student/Theme1/Form',compact('form'));
+        Form::where('id', $id)->where('status', 'enable')->firstOrFail();
+
+        $submissionId = request()->query('submission');
+
+        return Inertia::render('Forms/RuntimeFill', [
+            'formId' => (int) $id,
+            'locale' => app()->getLocale() === 'en' ? 'en' : 'ar',
+            'submissionId' => $submissionId ? (int) $submissionId : null,
+        ]);
     }
 }

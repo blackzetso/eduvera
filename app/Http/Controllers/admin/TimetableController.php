@@ -14,6 +14,10 @@ use App\Models\TimetableAssignment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Services\DailyAbsenceCoverageService;
+use App\Services\TimetableRoleAssignmentService;
+use App\Services\DepartmentPlanService;
 use App\Services\WhatsAppService;
 
 class TimetableController extends Controller
@@ -39,7 +43,7 @@ class TimetableController extends Controller
     /**
      * Show the form for editing the timetable.
      */
-    public function edit()
+    public function edit(Request $request)
     {
         $timetable = $this->getOrCreateTimetable();
 
@@ -57,10 +61,52 @@ class TimetableController extends Controller
             $query->with('children');
         }])->whereNull('parent_id')->get();
 
+        $teachers = User::where('user_type', 'teacher')
+            ->with(['subjects:id,name'])
+            ->get(['id', 'name', 'email', 'department', 'job_title']);
+        $subjects = Subject::orderBy('name')->get(['id', 'name']);
+
+        $initialStep = (int) $request->query('step', 1);
+        if ($initialStep < 1 || $initialStep > 6) {
+            $initialStep = 1;
+        }
+
+        $coveragePreview = app(DailyAbsenceCoverageService::class)->buildPreview(today()->toDateString());
+        $assignmentContext = app(TimetableRoleAssignmentService::class)->buildAdminContext();
+
+        $departmentNeeds = [];
+        if ($plans = app(DepartmentPlanService::class)->activePlansForTimetable($timetable)->take(6)) {
+            $departmentNeeds = app(DepartmentPlanService::class)->executiveSummary($plans);
+        }
+
         return Inertia::render('Admin/theme1/Timetables/Edit', [
             'timetable' => $timetable,
             'categories' => $categories,
+            'teachers' => $teachers,
+            'subjects' => $subjects,
+            'assignmentContext' => $assignmentContext,
+            'wizardMode' => 'full',
+            'initialStep' => $initialStep,
+            'departmentNeedsSummary' => $departmentNeeds,
+            'dailyCoverageSummary' => array_merge(
+                $coveragePreview['summary'] ?? ['absent_count' => 0],
+                [
+                    'date' => $coveragePreview['date'] ?? today()->toDateString(),
+                    'day_name' => $coveragePreview['day_name'] ?? null,
+                    'absent_teachers' => $coveragePreview['absent_teachers'] ?? [],
+                    'coverage_roster' => array_slice($coveragePreview['coverage_roster'] ?? [], 0, 15),
+                ]
+            ),
+            'teacherAttendanceStatuses' => config('attendance.teacher_attendance_statuses', []),
         ]);
+    }
+
+    /**
+     * Legacy view URL — redirect to wizard (step 6 visual grid).
+     */
+    public function show()
+    {
+        return redirect()->route('admin.timetable.edit', ['step' => 6]);
     }
 
     /**
@@ -74,6 +120,7 @@ class TimetableController extends Controller
             'name' => 'required|string|max:255',
             'academic_year' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive',
+            'settings' => 'nullable|array',
         ]);
 
         $timetable->update($data);
@@ -82,35 +129,205 @@ class TimetableController extends Controller
     }
 
     /**
-     * Display the timetable.
+     * Save timetable framework (settings, days, lesson periods) in one transaction.
      */
-    public function show()
+    public function saveFramework(Request $request)
     {
-        $timetable = $this->getOrCreateTimetable();
+        Log::info('Timetable Framework Save', $request->all());
 
-        $timetable->load([
-            'days.periods.category',
-            'days.periods.assignments.teacher',
-            'days.periods.assignments.subject',
-            'periods.category',
-            'periods.assignments.teacher',
-            'periods.assignments.subject',
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'academic_year' => 'nullable|string|max:255',
+            'status' => 'required|in:active,inactive',
+            'settings' => 'nullable|array',
+            'working_days' => 'required|array|min:1',
+            'working_days.*' => 'string|max:255',
+            'period_structure' => 'required|array|min:1',
+            'period_structure.*.period_number' => 'nullable|integer|min:0',
+            'period_structure.*.time_from' => 'required|string',
+            'period_structure.*.time_to' => 'required|string',
+            'period_structure.*.kind' => 'nullable|string',
+            'category_id' => 'nullable',
         ]);
 
-        $teachers = User::where('user_type', 'teacher')->get();
-        $subjects = Subject::all();
+        $lessonSlots = collect($data['period_structure'])
+            ->filter(fn (array $slot) => $this->isLessonSlot($slot))
+            ->values();
 
-        // Get all categories with nested children recursively
-        $categories = Category::with(['children' => function ($query) {
-            $query->with('children');
-        }])->whereNull('parent_id')->get();
+        if ($lessonSlots->isEmpty()) {
+            return $this->frameworkSaveErrorResponse($request, 'لا توجد حصص دراسية في الهيكل');
+        }
 
-        return Inertia::render('Admin/theme1/Timetables/Show', [
-            'timetable' => $timetable,
-            'teachers' => $teachers,
-            'subjects' => $subjects,
-            'categories' => $categories,
+        $categoryIds = $this->categoryIdsForFramework($data['category_id'] ?? null);
+
+        try {
+            DB::transaction(function () use ($data, $lessonSlots, $categoryIds) {
+                $timetable = $this->getOrCreateTimetable();
+
+                $timetable->update([
+                    'name' => $data['name'],
+                    'academic_year' => $data['academic_year'] ?? $timetable->academic_year,
+                    'status' => $data['status'],
+                    'settings' => $data['settings'] ?? [],
+                ]);
+
+                $periodIds = TimetablePeriod::where('timetable_id', $timetable->id)->pluck('id');
+                TimetableAssignment::whereIn('timetable_period_id', $periodIds)->delete();
+                TimetablePeriod::where('timetable_id', $timetable->id)->delete();
+
+                $workingDays = $data['working_days'];
+
+                TimetableDay::where('timetable_id', $timetable->id)
+                    ->whereNotIn('day_name', $workingDays)
+                    ->delete();
+
+                $existingNames = TimetableDay::where('timetable_id', $timetable->id)
+                    ->pluck('day_name')
+                    ->all();
+
+                $order = (int) (TimetableDay::where('timetable_id', $timetable->id)->max('day_order') ?? 0);
+
+                foreach ($workingDays as $dayName) {
+                    if (in_array($dayName, $existingNames, true)) {
+                        continue;
+                    }
+                    $order++;
+                    TimetableDay::create([
+                        'timetable_id' => $timetable->id,
+                        'day_name' => $dayName,
+                        'day_order' => $order,
+                        'is_active' => true,
+                    ]);
+                }
+
+                $daysByName = TimetableDay::where('timetable_id', $timetable->id)
+                    ->get()
+                    ->keyBy('day_name');
+
+                foreach ($workingDays as $dayName) {
+                    $day = $daysByName->get($dayName);
+                    if (!$day) {
+                        continue;
+                    }
+
+                    foreach ($lessonSlots as $slot) {
+                        $periodNumber = (int) ($slot['period_number'] ?? 0);
+                        $timeFrom = $this->normalizeTimetableTime($slot['time_from']);
+                        $timeTo = $this->normalizeTimetableTime($slot['time_to']);
+
+                        if (strtotime($timeTo) <= strtotime($timeFrom)) {
+                            throw new \InvalidArgumentException(
+                                "وقت غير صالح للحصة رقم {$periodNumber} ({$timeFrom} — {$timeTo})"
+                            );
+                        }
+
+                        foreach ($categoryIds as $catId) {
+                            TimetablePeriod::create([
+                                'timetable_id' => $timetable->id,
+                                'timetable_day_id' => $day->id,
+                                'period_number' => $periodNumber,
+                                'time_from' => $timeFrom,
+                                'time_to' => $timeTo,
+                                'category_id' => $catId,
+                            ]);
+                        }
+                    }
+                }
+            });
+        } catch (\Throwable $e) {
+            Log::error('Timetable Framework Save failed', ['error' => $e->getMessage()]);
+
+            return $this->frameworkSaveErrorResponse(
+                $request,
+                $e->getMessage() ?: 'تعذر حفظ الهيكل'
+            );
+        }
+
+        return $this->frameworkSaveSuccessResponse($request);
+    }
+
+    private function frameworkSaveSuccessResponse(Request $request)
+    {
+        $message = 'تم حفظ هيكل الجدول بنجاح';
+
+        if ($request->header('X-Inertia')) {
+            return redirect()
+                ->route('admin.timetable.edit', ['step' => 6])
+                ->with('success', $message);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
         ]);
+    }
+
+    private function frameworkSaveErrorResponse(Request $request, string $message, int $status = 422)
+    {
+        if ($request->header('X-Inertia')) {
+            return back()->withErrors(['framework' => $message]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+        ], $status);
+    }
+
+    private function normalizeTimetableTime(?string $time): string
+    {
+        if (!$time) {
+            return '08:00';
+        }
+
+        $time = trim($time);
+
+        if (preg_match('/^\d{1,2}:\d{2}(:\d{2})?$/', $time)) {
+            return substr($time, 0, 5);
+        }
+
+        return $time;
+    }
+
+    private function isLessonSlot(array $slot): bool
+    {
+        $kind = $slot['kind'] ?? 'lesson';
+
+        if ($kind !== 'lesson') {
+            return false;
+        }
+
+        return (int) ($slot['period_number'] ?? 0) > 0;
+    }
+
+    /**
+     * @return array<int|null>
+     */
+    private function categoryIdsForFramework($categoryId): array
+    {
+        if ($categoryId !== null && $categoryId !== '' && $categoryId !== 'all' && is_numeric($categoryId)) {
+            return [(int) $categoryId];
+        }
+
+        $allRootCategories = Category::whereNull('parent_id')->get();
+
+        if ($allRootCategories->isEmpty()) {
+            return [null];
+        }
+
+        $allLeafCategories = collect();
+
+        foreach ($allRootCategories as $rootCategory) {
+            $allLeafCategories = $allLeafCategories->merge($rootCategory->getLeafDescendants());
+        }
+
+        $allLeafCategories = $allLeafCategories->unique('id');
+
+        if ($allLeafCategories->isEmpty()) {
+            return [null];
+        }
+
+        return $allLeafCategories->pluck('id')->all();
     }
 
     /**
@@ -740,8 +957,16 @@ class TimetableController extends Controller
         ]);
 
         $period = TimetablePeriod::with(['timetable', 'day', 'category'])->findOrFail($data['timetable_period_id']);
-        $teacher = User::findOrFail($data['teacher_id']);
+        $teacher = User::with('subjects')->findOrFail($data['teacher_id']);
         $subject = Subject::findOrFail($data['subject_id']);
+
+        if ($teacher->user_type !== 'teacher') {
+            return back()->withErrors(['teacher_id' => 'يجب اختيار معلم صالح.']);
+        }
+
+        if (! $teacher->subjects->contains('id', $subject->id)) {
+            return back()->withErrors(['teacher_id' => 'هذا المعلم غير مسجل لتدريس المادة المختارة.']);
+        }
 
         // Check if teacher is already assigned to this period with ANY type (main or backup)
         $existingAnyType = TimetableAssignment::where('timetable_period_id', $data['timetable_period_id'])

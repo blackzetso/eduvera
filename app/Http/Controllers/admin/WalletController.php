@@ -90,6 +90,8 @@ class WalletController extends Controller
      */
     public function recharge(Request $request)
     {
+        $this->authorize('finance.walletAdjust');
+
         $request->validate([
             'amount' => 'required|numeric|min:0.25|max:10000', // TODO: Change back to min:10 after testing
             'payment_method_id' => 'nullable|integer|in:0,2,3,4,5,6,7,11,14,30',
@@ -550,6 +552,8 @@ class WalletController extends Controller
      */
     public function syncConsumption()
     {
+        $this->authorize('finance.financialCorrection');
+
         $result = $this->walletService->syncConsumptionFromBunny();
 
         if ($result['success']) {

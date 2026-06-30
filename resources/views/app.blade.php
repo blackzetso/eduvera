@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -83,7 +83,7 @@
         <!-- Google Font -->
         <link rel="preconnect" href="https://fonts.googleapis.com/">
         <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&amp;family=Roboto:wght@400;500;700&amp;display=swap">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap">
 
         <!-- Plugins CSS -->
         <link rel="stylesheet" type="text/css" href="{{ asset('front/theme1/vendor/font-awesome/css/all.min.css') }}">
@@ -112,7 +112,8 @@
         <div id="app-debug-fallback" style="display:none; padding:1rem; margin:1rem; background:#fee; color:#c00; font-family: monospace; font-size: 14px; border: 1px solid #c00;">
             <strong>[Debug] التطبيق لم يبدأ.</strong><br>
             1) افتح <a href="/build-check" target="_blank">/build-check</a> وتأكد أن manifest.json موجود.<br>
-            2) في Developer Tools → Network تحقق: هل ملف app-xxx.js يرجع 200 أم 404؟
+            2) في Developer Tools → Network تحقق: هل ملف app-xxx.js يرجع 200 أم 404؟<br>
+            3) إن كان الطلب يذهب إلى <code>localhost:5173</code> بدون تشغيل Vite: أوقف السيرفر ثم شغّل <code>composer serve</code> أو <code>composer dev</code>.
         </div>
         <script>
             (function () {
@@ -129,11 +130,12 @@
                         var appRoot = document.getElementById('app');
                         var fallback = document.getElementById('app-debug-fallback');
                         var loadingMsg = document.getElementById('app-loading-msg');
-                        if (fallback && appRoot && !appRoot.hasChildNodes()) {
+                        var mounted = window.__appMounted || (appRoot && appRoot.childElementCount > 0);
+                        if (fallback && appRoot && !mounted) {
                             hideLoading();
                             fallback.style.display = 'block';
                             console.warn('[App] 4. Vue did not mount - showing fallback message');
-                        } else if (loadingMsg && appRoot && appRoot.hasChildNodes()) {
+                        } else if (loadingMsg && mounted) {
                             hideLoading();
                         }
                     }, 2000);
@@ -160,5 +162,9 @@
 
         <!-- Template Functions -->
         <script src="{{ asset('front/theme1/js/functions.js') }}"></script>
+
+        @if(request()->is('canteen/pos'))
+            @include('canteen.pos-wallet-patch')
+        @endif
     </body>
 </html>

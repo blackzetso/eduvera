@@ -9,8 +9,20 @@ import VueApexCharts from 'vue3-apexcharts'
 import VueSweetalert2 from 'vue-sweetalert2'
 import 'sweetalert2/dist/sweetalert2.min.css'
 import 'vue3-toastify/dist/index.css'
+import '../css/eduvera-responsive.css'
+import '../css/admissions-dashboard.css'
+import '../css/student-command-center.css'
+import '../css/parent-command-center.css'
+import '../css/admission-command-center.css'
+import '../css/workspace-context.css'
+import '../css/admissions-visits-dashboard.css'
+import '../css/form-builder-v2.css'
+import '../css/form-runtime.css'
+import '../css/timetable-wizard.css'
+import '../css/timetable-setup-wizard.css'
+import '../css/school-talent-landing.css'
+import '../css/dova-widget.css'
 
-// Log uncaught errors so they appear in console (helps debug white screen on production)
 window.addEventListener('error', (e) => {
   console.error('[App] Uncaught error:', e.error || e.message, e.filename, e.lineno, e.colno)
 })
@@ -36,6 +48,7 @@ function initInertia() {
       app.component('apexchart', VueApexCharts)
 
       app.mount(el)
+      window.__appMounted = true
       try { window.dispatchEvent(new CustomEvent('inertia-mounted')) } catch (_) {}
     },
     progress: {

@@ -12,6 +12,7 @@ class TimetablePeriod extends Model
     protected $fillable = [
         'timetable_id',
         'timetable_day_id',
+        'day',
         'period_number',
         'time_from',
         'time_to',

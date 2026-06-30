@@ -9,6 +9,7 @@ class LiveStreamAttendance extends Model
 {
     protected $fillable = [
         'live_stream_id',
+        'student_id',
         'student_name',
         'student_email',
         'join_time',
@@ -24,6 +25,11 @@ class LiveStreamAttendance extends Model
     public function liveStream(): BelongsTo
     {
         return $this->belongsTo(LiveStream::class);
+    }
+
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'student_id');
     }
 
     public function getFormattedDurationAttribute(): string

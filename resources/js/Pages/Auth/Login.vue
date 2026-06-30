@@ -10,7 +10,7 @@ import TextInput from '@/Components/TextInput.vue';
 //import { route } from 'vendor/tightenco/ziggy/src/js';
 import { route } from 'ziggy-js';
 import { Ziggy } from '@/ziggy';
-
+import DovaWidget from '@/Components/Dova/DovaWidget.vue';
 
 defineProps({
     canResetPassword: Boolean,
@@ -150,4 +150,5 @@ const submit = () => {
             </div>
         </section>
     </main>
+    <DovaWidget />
 </template>

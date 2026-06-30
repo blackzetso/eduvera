@@ -22,8 +22,21 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
-            'admin'   => \App\Http\Middleware\EnsureAdmin::class,
-            'teacher' => \App\Http\Middleware\EnsureTeacher::class,
+            'admin'         => \App\Http\Middleware\EnsureAdmin::class,
+            'teacher'       => \App\Http\Middleware\EnsureTeacher::class,
+            'social-worker' => \App\Http\Middleware\EnsureSocialWorker::class,
+            'nurse'         => \App\Http\Middleware\EnsureNurse::class,
+            'control-staff' => \App\Http\Middleware\EnsureControlStaff::class,
+            'card-reader'   => \App\Http\Middleware\EnsureCardReader::class,
+            'guardian'      => \App\Http\Middleware\EnsureGuardian::class,
+            'department-plan' => \App\Http\Middleware\EnsureAdminOrDepartmentHead::class,
+            'dova-knowledge' => \App\Http\Middleware\EnsureDovaKnowledgeAccess::class,
+            'admission-intake' => \App\Http\Middleware\SecureAdmissionIntake::class,
+            
+            'canteen' => \App\Modules\Canteen\Http\Middleware\EnsureCanteenModuleEnabled::class,
+            'canteen.permission' => \App\Modules\Canteen\Http\Middleware\EnsureCanteenPermission::class,
+            'canteen.guardian' => \App\Modules\Canteen\Http\Middleware\EnsureCanteenGuardianApi::class,
+            'canteen.guardian.owns-student' => \App\Modules\Canteen\Http\Middleware\EnsureGuardianOwnsStudent::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
@@ -35,5 +48,8 @@ return Application::configure(basePath: dirname(__DIR__))
         
         // Update exchange rate every 6 hours (4 times daily = ~120 requests/month)
         $schedule->command('exchange-rate:update')->everySixHours();
+
+        // Check FAQ review due dates and send owner reminders
+        $schedule->command('dova:check-knowledge-review')->dailyAt('06:00');
     })
     ->create();

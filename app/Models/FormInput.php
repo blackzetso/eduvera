@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\Form;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class FormInput extends Model
 {
@@ -11,18 +11,29 @@ class FormInput extends Model
 
     protected $fillable = [
         'form_id',
+        'section_id',
+        'sort_order',
         'name',
+        'label_en',
         'type',
         'required',
         'options',
+        'schema',
     ];
 
     protected $casts = [
         'options' => 'array',
+        'schema' => 'array',
+        'required' => 'boolean',
     ];
 
-    public function form()
+    public function form(): BelongsTo
     {
         return $this->belongsTo(Form::class);
+    }
+
+    public function section(): BelongsTo
+    {
+        return $this->belongsTo(FormSection::class, 'section_id');
     }
 }
